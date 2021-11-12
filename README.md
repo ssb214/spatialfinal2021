@@ -1,6 +1,5 @@
 # spatialfinal2021
 Spatial Epidemiology final project, Fall 2021
 
-Let's try this again 
-
-LEAH'S HERE NOW 
+EJScreen data: 
+- For ease of importing to GitHub, we limited the data to only areas within GA before loading the dataset to the project 
