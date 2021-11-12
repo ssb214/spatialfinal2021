@@ -19,6 +19,7 @@ pacman::p_load(tidyverse, # General data wrangling
 raster,
 rgdal,
 sp,
+readxl,
 sf, # manage spatial data using simple features
 tmap) # mapping of sf or sp data
 ```
@@ -27,13 +28,13 @@ tmap) # mapping of sf or sp data
 # Loading data
 ```{r load data}
 #outcome data
-EJscreen <- read.csv("EJ.csv")
+EJscreen <- read.csv("Data/EJ.csv")
 
-#exposure geometry data
-HOLC_map <- readOGR(dsn=path.expand("C:/Users/lmoubad/OneDrive - Emory University/Spatial Project/Data/HRS2020-Shapefiles/HRS2020"),
+#exposure geometry data 
+HOLC_map <- readOGR(dsn=path.expand("Data/HRS2020-Shapefiles/HRS2020"),
                             layer="HRS2020")
 #exposure attribute data
-HOLC_score <- read_excel("C:/Users/lmoubad/OneDrive - Emory University/Spatial Project/Data/Historic Redlining Score 2020.xlsx")
+HOLC_score <- read_excel("Data/Historic Redlining Score 2020.xlsx")
 ```
 
 
@@ -62,7 +63,6 @@ summary(HOLC_map)
 HOLC_score$GEOID20 <- paste0("0", HOLC_score$GEOID20)
 
 m <- merge(HOLC_map, HOLC_score, by.y='GEOID20')
-
 
 
 ej_ga <- subset(EJ, STATE_NAME=="Georgia")
