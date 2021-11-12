@@ -28,7 +28,7 @@ tmap) # mapping of sf or sp data
 # Loading data
 ```{r load data}
 #outcome data
-EJscreen <- read.csv("Data/EJ.csv")
+EJscreen <- read.csv("Data/ej_ga.csv")
 
 #exposure geometry data 
 HOLC_map <- readOGR(dsn=path.expand("Data/HRS2020-Shapefiles/HRS2020"),
@@ -65,7 +65,7 @@ HOLC_score$GEOID20 <- paste0("0", HOLC_score$GEOID20)
 m <- merge(HOLC_map, HOLC_score, by.y='GEOID20')
 
 
-ej_ga <- subset(EJ, STATE_NAME=="Georgia")
+
 #multiple ways to get the same map:
 plot(HOLC_map)
 tm_shape(HOLC_map) + tm_polygons()
