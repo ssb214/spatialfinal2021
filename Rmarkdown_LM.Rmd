@@ -1,4 +1,10 @@
 ---
+title: "Rmarkdown_LM"
+author: "Leah Moubadder, Jasmine Aqua, Susan Hoffman"
+date: "11/15/2021"
+output: pdf_document
+---
+---
 title: "Spatial Epi Project"
 author: "Leah Moubadder, Jasmine Aqua, Susan Hoffman"
 date: "11/11/2021"
@@ -70,6 +76,15 @@ tm_shape(HOLC_map) + tm_polygons("Shape_Leng")
 ```
 
 ```{r join}
+
+
+library(tidycensus)
+#add census tract
+geo_id<-append_geoid(EJscreen, 'tr')
+
+#return number of NA geoids
+sum(is.na(geo_id$geoid)) 
+#11 NA geoid
 
 ```
 
