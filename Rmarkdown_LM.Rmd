@@ -77,5 +77,14 @@ tm_shape(HOLC_map) + tm_polygons("Shape_Leng")
 
 ```{r join}
 
+
+library(tidycensus)
+#add census tract
+geo_id<-append_geoid(EJscreen, 'tr')
+
+#return number of NA geoids
+sum(is.na(geo_id$geoid)) 
+#11 NA geoid
+
 ```
 
