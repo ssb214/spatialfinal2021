@@ -36,3 +36,7 @@ HOLC_score <- read_excel("Data/Historic Redlining Score 2020.xlsx")
 
 
 #### Susan ####
+
+View(EJscreen)
+
+summary(EJscreen$D_PM25_2)
