@@ -21,3 +21,5 @@ HOLC_map <- readOGR(dsn=path.expand("Data/HRS2020-Shapefiles/HRS2020"),
 ## exposure attribute data
 HOLC_score <- read_excel("Data/Historic Redlining Score 2020.xlsx")
 
+
+
