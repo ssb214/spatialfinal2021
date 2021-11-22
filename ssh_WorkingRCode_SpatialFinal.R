@@ -61,3 +61,5 @@ tm_shape(full_savannah) +
           style = 'quantile',
           palette = 'BuPu') +
   tm_borders()
+
+
