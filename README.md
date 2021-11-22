@@ -31,3 +31,14 @@ We have not identified confounders as redlining is so far in the past, any covar
 EJScreen data: 
 - For ease of importing to GitHub, we limited the data to only areas within GA before loading the dataset to the project 
 
+# Dataset information 
+
+HOLC_full: Census tract + HOLC data, all Georgia census tracts
+HOLC_full_georgia: Census tract + HOLC data, all Georgia census tracts, only GA census tracts with HOLC data
+HOLC_full_atlanta: Census tract + HOLC data, only census tracts in Atlanta with HOLC data
+HOLC_full_augusta: Census tract + HOLC data, only census tracts in Augusta with HOLC data
+HOLC_full_columbus: Census tract + HOLC data, only census tracts in Columbus with HOLC data
+HOLC_full_macon: Census tract + HOLC data, only census tracts in Macon with HOLC data
+HOLC_full_savannah: Census tract + HOLC data, only census tracts in Savannah with HOLC data
+
+Data convention HOLC_map_cityname will be used to create datasets with extra census tracts for mapping purposes. Need to still figure out how we want to present those maps.
