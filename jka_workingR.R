@@ -21,6 +21,8 @@ pacman::p_load(tidyverse,    # general data wrangling
                readxl, 
                viridis)               
 
+### Creating subset dataset and redlining maps
+
 ## Import main dataset
 full_data <- readOGR(dsn=path.expand("tempdir"),layer="full_data") # all census tracts
 
