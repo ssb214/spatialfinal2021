@@ -58,7 +58,7 @@ tm_shape(full_savannah) +
   tm_fill('Developmental_HI',
           style = 'quantile',
           palette = 'BuPu') +
-  tm_borders()
+  tm_borders() 
 
 tm_shape(full_savannah) + 
   tm_fill('Reproductive_HI',
@@ -66,4 +66,4 @@ tm_shape(full_savannah) +
           palette = 'BuPu') +
   tm_borders()
 
-
+summary(ga_hi$Reproductive_HI)
