@@ -33,7 +33,18 @@ ga_tracts_20 <- readOGR(dsn=path.expand("Data/tl_2020_13_all"),layer="tl_2020_13
 HOLC_score2 <- HOLC_score %>% 
   filter(substr(GEOID20,1,2) == "13") # restricting to only GA
 
-full_data <- sp::merge(ga_hi2, HOLC_score2, 
+# cleaning EJScreen data 
+
+ej_ga2 <- ej_ga %>% 
+  mutate(GEOID20 = substr(ej_ga$ID, 1, 11))
+
+ej_ga2 <- sp::merge(ga_tracts_20, ej_ga2, 
+                    by = 'GEOID20', 
+                    all.y = T,
+                    duplicateGeoms = T,
+                    na.strings = 'Missing')
+
+full_data <- sp::merge(ej_ga2, HOLC_score2, 
                        by = 'GEOID20', 
                        all.y = T,
                        duplicateGeoms = T,
@@ -43,3 +54,6 @@ summary(full_data)
 
 #### Exploring data ####
 
+x <- readOGR(dsn=path.expand("Data/tempdir"),layer="HOLC_full")
+
+writeOGR(obj=full_data, dsn="Data/tempdir", layer="full_data", driver="ESRI Shapefile")
