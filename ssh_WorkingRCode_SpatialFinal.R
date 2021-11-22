@@ -60,4 +60,10 @@ tm_shape(full_savannah) +
           palette = 'BuPu') +
   tm_borders()
 
+tm_shape(full_savannah) + 
+  tm_fill('Reproductive_HI',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders()
+
 
