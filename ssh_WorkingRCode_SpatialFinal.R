@@ -7,6 +7,7 @@ library(tidyverse)
 library(dplyr)
 library(sp)
 library(readxl)
+library(rgdal)
 
 # Data
 
@@ -23,11 +24,8 @@ HOLC_score <- read_excel("Data/Historic Redlining Score 2020.xlsx")
 
 ## Importing Georgia Census Tract Geographic Boundary file
 ## updated 2020 data
-
-# setwd("C:/Users/SSBUCKE/OneDrive - Emory University/Spatial Project/Data")
-ga_tracts_20 <- readOGR(dsn=path.expand("tl_2020_13_all"),layer="tl_2020_13_tract20")
-
-# setwd("C:/Users/SSBUCKE/OneDrive - Emory University/Spatial Project/spatialfinal2021")
+ 
+ga_tracts_20 <- readOGR(dsn=path.expand("Data/tl_2020_13_all"),layer="tl_2020_13_tract20")
 
 #### Data editing ####
 
@@ -61,3 +59,5 @@ tm_shape(full_savannah) +
           style = 'quantile',
           palette = 'BuPu') +
   tm_borders()
+
+
