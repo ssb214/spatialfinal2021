@@ -159,7 +159,21 @@ e <- tm_shape(HOLC_full_savannah) +
 tmap_arrange(a, b, c, d, e)
 
 
+## Exporting datasets
 
+
+dir.create("tempdir")
+
+writeOGR(obj=HOLC_full, dsn="tempdir", layer="HOLC_full", driver="ESRI Shapefile")
+writeOGR(obj=HOLC_full_atlanta, dsn="tempdir", layer="HOLC_full_atlanta", driver="ESRI Shapefile")
+writeOGR(obj=HOLC_full_augusta, dsn="tempdir", layer="HOLC_full_augusta", driver="ESRI Shapefile")
+writeOGR(obj=HOLC_full_macon, dsn="tempdir", layer="HOLC_full_macon", driver="ESRI Shapefile")
+writeOGR(obj=HOLC_full_savannah, dsn="tempdir", layer="HOLC_full_savannah", driver="ESRI Shapefile")
+writeOGR(obj=HOLC_full_columbus, dsn="tempdir", layer="HOLC_full_columbus", driver="ESRI Shapefile")
+
+
+## Subsetting full_data with EJ screen variables 
+full_data <- readOGR(dsn=path.expand("tempdir"),layer="full_data")
 
 
 
@@ -228,5 +242,11 @@ tm_shape(HOLC_full) +
 
 # notes: need to figure out how many "background" census tracts we want in each map - in savannah map, I just included the whole county
 # need to figure out if we want to add more detail to the map
+
+
+  
+  
+  
+  
 
 
