@@ -21,6 +21,160 @@ pacman::p_load(tidyverse,    # general data wrangling
                readxl, 
                viridis)               
 
+## Import main dataset
+full_data <- readOGR(dsn=path.expand("tempdir"),layer="full_data") # all census tracts
+
+# Projecting data to Albers Equal Area
+full_data <- st_transform(full_data, 5070) # project data to Albers Equal Area
+
+## Import the exposure attribute data
+HOLC_score <- read_excel("Historic Redlining Score 2010.xlsx")
+
+HOLC_score2 <- HOLC_score %>% 
+  filter(substr(GEOID10,1,2) == "13") # restricting to only GA
+
+MyPalette <- c("#A8FF33", "#81F0FF", "#FAFF93", "#FF9693")
+MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
+
+# All GA
+ga_ids <- HOLC_score2$GEOID10
+full_data_georgia <- subset(full_data, GEOID10 %in% ga_ids)
+summary(full_data_georgia)
+writeOGR(obj=full_data_georgia, dsn="tempdir", layer="full_data_georgia", driver="ESRI Shapefile")
+
+# Atlanta only
+atlanta <- HOLC_score2 %>% 
+  filter(CBSA=="12060")
+atlanta_ids <- atlanta$GEOID10
+full_data_atlanta <- subset(full_data, GEOID10 %in% atlanta_ids)
+summary(full_data_atlanta)
+writeOGR(obj=full_data_atlanta, dsn="tempdir", layer="full_data_atlanta", driver="ESRI Shapefile")
+
+a <- tm_shape(full_data_atlanta) + 
+  tm_fill('HRS10',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score") +
+  tm_borders() +
+  tm_layout(legend.position = c('RIGHT', 'BOTTOM'), legend.title.size = 1, legend.text.size = 0.8,
+            main.title = "Atlanta", main.title.size = 1) 
+
+a
+
+# Augusta only
+augusta <- HOLC_score2 %>% 
+  filter(CBSA=="12260")
+augusta_ids <- augusta$GEOID10
+full_data_augusta<- subset(full_data, GEOID10 %in% augusta_ids)
+summary(full_data_augusta)
+writeOGR(obj=full_data_augusta, dsn="tempdir", layer="full_data_augusta", driver="ESRI Shapefile")
+
+b <- tm_shape(full_data_augusta) + 
+  tm_fill('HRS10',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score") +
+  tm_borders() +
+  tm_layout(legend.position = c('LEFT', 'BOTTOM'), legend.title.size = 1, legend.text.size = 0.8,
+            main.title = "Augusta", main.title.size = 1) 
+
+b  
+
+# Columbus only
+columbus <- HOLC_score2 %>% 
+  filter(CBSA=="17980")
+columbus_ids <- columbus$GEOID10
+full_data_columbus <- subset(full_data, GEOID10 %in% columbus_ids)
+summary(full_data_columbus)
+writeOGR(obj=full_data_columbus, dsn="tempdir", layer="full_data_columbus", driver="ESRI Shapefile")
+
+c <- tm_shape(full_data_columbus) + 
+  tm_fill('HRS10',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score") +
+  tm_borders() +
+  tm_layout(legend.position = c('LEFT', 'BOTTOM'), legend.title.size = 0.8, legend.text.size = 0.8,
+            main.title = "Columbus", main.title.size = 1) 
+
+c  
+
+# Macon only
+macon <- HOLC_score2 %>% 
+  filter(CBSA=="31420")
+macon_ids <- macon$GEOID10
+full_data_macon <- subset(full_data, GEOID10 %in% macon_ids)
+summary(full_data_macon)
+writeOGR(obj=full_data_macon, dsn="tempdir", layer="full_data_macon", driver="ESRI Shapefile")
+
+
+d <- tm_shape(full_data_macon) + 
+  tm_fill('HRS10',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score") +
+  tm_borders() +
+  tm_layout(legend.position = c('LEFT', 'BOTTOM'), legend.title.size = 1, legend.text.size = 0.8,
+            main.title = "Macon", main.title.size = 1) 
+
+d
+
+# Savannah only
+savannah <- HOLC_score2 %>% 
+  filter(CBSA=="42340")
+savannah_ids <- savannah$GEOID10
+full_data_savannah <- subset(full_data, GEOID10 %in% savannah_ids)
+summary(full_data_savannah)
+writeOGR(obj=full_data_savannah, dsn="tempdir", layer="full_data_savannah", driver="ESRI Shapefile")
+
+
+e <- tm_shape(full_data_savannah) + 
+  tm_fill('HRS10',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score") +
+  tm_borders() +
+  tm_layout(legend.position = c('LEFT', 'BOTTOM'), legend.title.size = 1, legend.text.size = 0.8,
+            main.title = "Savannah", main.title.size = 1) 
+
+
+e
+
+
+tmap_arrange(a, b, c, d, e)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -192,7 +346,7 @@ summary(full_data)
 
 # All GA
 
-ga_ids <- HOLC_score2$GEOID20
+ga_ids <- HOLC_score2$GEOID10
 full_data_georgia <- subset(full_data, GEOID20 %in% ga_ids)
 summary(full_data_georgia)
 writeOGR(obj=full_data_georgia, dsn="tempdir", layer="full_data_georgia", driver="ESRI Shapefile")
@@ -315,6 +469,10 @@ tm_shape(HOLC_full) +
   full_data_macon <- readOGR(dsn=path.expand("tempdir"),layer="full_data_macon") # only has census tracts with HOLC data
   full_data_savannah <- readOGR(dsn=path.expand("tempdir"),layer="full_data_savannah") # only has census tracts with HOLC data
   full_data_columbus <- readOGR(dsn=path.expand("tempdir"),layer="full_data_columbus") # only has census tracts with HOLC data
+  
+  
+  
+
   
   
   
