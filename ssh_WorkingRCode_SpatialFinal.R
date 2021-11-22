@@ -14,7 +14,8 @@ library(readr)
 
 ## outcome data
 ej_ga <- read_csv("Data/ej_ga.csv", 
-                  col_types = cols(...1 = col_skip()))
+                  col_types = cols(...1 = col_skip())) %>% 
+  select('ID', 'DSLPM', 'CANCER', 'RESP')
 
 ## exposure geometry data 
 HOLC_map <- readOGR(dsn=path.expand("Data/HRS2020-Shapefiles/HRS2020"),
@@ -36,7 +37,10 @@ HOLC_score2 <- HOLC_score %>%
 # cleaning EJScreen data 
 
 ej_ga2 <- ej_ga %>% 
-  mutate(GEOID20 = substr(ej_ga$ID, 1, 11))
+  mutate(GEOID20 = substr(ej_ga$ID, 1, 11)) %>% 
+  select(-'ID')
+
+ej_ga2 <- ej_ga2[!duplicated(ej_ga2$GEOID20),]
 
 ej_ga2 <- sp::merge(ga_tracts_20, ej_ga2, 
                     by = 'GEOID20', 
@@ -52,8 +56,12 @@ full_data <- sp::merge(ej_ga2, HOLC_score2,
 
 summary(full_data)
 
+writeOGR(obj=full_data, dsn="Data/tempdir", layer="full_data", driver="ESRI Shapefile")
+
 #### Exploring data ####
 
-x <- readOGR(dsn=path.expand("Data/tempdir"),layer="HOLC_full")
 
+#### Example Code ####
+
+x <- readOGR(dsn=path.expand("Data/tempdir"),layer="HOLC_full")
 writeOGR(obj=full_data, dsn="Data/tempdir", layer="full_data", driver="ESRI Shapefile")
