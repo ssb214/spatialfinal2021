@@ -21,47 +21,21 @@ pacman::p_load(tidyverse,    # general data wrangling
                readxl, 
                viridis)               
 
-### Figuring out how to combine GA geography data with EJ screen data
-
-EJscreen <- read.csv("Data/ej_ga.csv")
-
-census_api_key("584ad55d1dfd1ad1025ac5de1005b5640ba7b973")
-vars10 <- c("P005003", "P005004", "P005006", "P004003")
-  
-il <- get_decennial(geography = "county", variables = vars10, year = 2010,
-                      summary_var = "P001001", state = "IL", geometry = TRUE) %>%
-    mutate(pct = 100 * (value / summary_value))
-  
-ga_tract <- get_decennial(geography = "tract", variables = vars10, year = 2010,
-                      summary_var = "P001001", state = "GA", geometry = TRUE) %>%
-    mutate(pct = 100 * (value / summary_value))
-  
-ga_block <- get_decennial(geography = "block", variables = vars10, year = 2010,
-                      summary_var = "P001001", state = "GA", geometry = TRUE) %>%
-    mutate(pct = 100 * (value / summary_value))
-  
-
-
-
-
-
-
-### Creating the redlining descriptive maps
+### Creating the datasets for redlining descriptive maps
   
 ### 1 Loading the data
   
-# Importing the exposure geometry data 
+## Importing the exposure geometry data 
 HOLC_map <- readOGR(dsn=path.expand("HRS2020-Shapefiles/HRS2020"),layer="HRS2020")
    
-# Importing the exposure attribute data
+## Importing the exposure attribute data
 HOLC_score <- read_excel("Historic Redlining Score 2020.xlsx")
 
-# Importing Georgia Census Tract Geographic Boundary file
+## Importing Georgia Census Tract Geographic Boundary file
 # updated 2020 data
 ga_tracts_20 <- readOGR(dsn=path.expand("tl_2020_13_all"),layer="tl_2020_13_tract20")
 
 ga_roads_20 <- readOGR(dsn=path.expand("tl_2020_13_all"),layer="tl_2020_13001_roads")
-
 
 
 ### 2 Cleaning and creating datasets for analysis
@@ -188,7 +162,40 @@ tmap_arrange(a, b, c, d, e)
 
 
 
-# trying a subset
+
+
+
+
+
+
+
+
+### Code drafts
+
+### Figuring out how to combine GA geography data with EJ screen data
+
+EJscreen <- read.csv("Data/ej_ga.csv")
+
+census_api_key("584ad55d1dfd1ad1025ac5de1005b5640ba7b973")
+vars10 <- c("P005003", "P005004", "P005006", "P004003")
+
+il <- get_decennial(geography = "county", variables = vars10, year = 2010,
+                    summary_var = "P001001", state = "IL", geometry = TRUE) %>%
+  mutate(pct = 100 * (value / summary_value))
+
+ga_tract <- get_decennial(geography = "tract", variables = vars10, year = 2010,
+                          summary_var = "P001001", state = "GA", geometry = TRUE) %>%
+  mutate(pct = 100 * (value / summary_value))
+
+ga_block <- get_decennial(geography = "block", variables = vars10, year = 2010,
+                          summary_var = "P001001", state = "GA", geometry = TRUE) %>%
+  mutate(pct = 100 * (value / summary_value))
+
+
+
+
+
+# trying a subset for mapping
 HOLC_full_savannah <- HOLC_full[HOLC_full$COUNTYFP20 == "051",]
 
 HOLC_full_savannah_2 <- HOLC_full[HOLC_full$CBSA == "42340", ]
