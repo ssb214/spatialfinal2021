@@ -1,6 +1,18 @@
 # spatialfinal2021
 Spatial Epidemiology final project, Fall 2021
 
+# to do 
+
+Susan: 
+- Make the 15 panel outcome maps pretty 
+
+Jasmine: 
+- Make the redline maps pretty 
+- Start poster 
+
+Leah: 
+- Globals Moran's I (15 models)
+
 # Outcome information 
 
 Outcomes of interest (by census tract):
