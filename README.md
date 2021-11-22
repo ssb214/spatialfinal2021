@@ -1,12 +1,6 @@
 # spatialfinal2021
 Spatial Epidemiology final project, Fall 2021
 
-# Next Steps 
-
-- Create a Table 1 (all cities combined and per city and by HOLC category) - Susan
-- Create redlining maps - Jasmine 
-- Creating combined dataset with redlining and NATA data - Leah 
-
 # Outcome information 
 
 Outcomes of interest (by census tract):
@@ -46,3 +40,10 @@ HOLC_full_macon: Census tract + HOLC data, only census tracts in Macon with HOLC
 HOLC_full_savannah: Census tract + HOLC data, only census tracts in Savannah with HOLC data
 
 Data convention HOLC_map_cityname will be used to create datasets with extra census tracts for mapping purposes. Need to still figure out how we want to present those maps.
+
+# Analysis Plan
+
+- Treating each metropolitan area as a spatial island 
+- We will calculate the Global Moran's I for each area to see if a spatial or aspatial model would be appropriate
+- If Global Moran's I is insignificant we will move forward with an aspatial model
+- If Global Moran's I is significant and a spatial model is appropriate, we will conduct Spatial Durbin Model 
