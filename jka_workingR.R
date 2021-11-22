@@ -60,60 +60,130 @@ HOLC_score <- read_excel("Historic Redlining Score 2020.xlsx")
 # updated 2020 data
 ga_tracts_20 <- readOGR(dsn=path.expand("tl_2020_13_all"),layer="tl_2020_13_tract20")
 
+ga_roads_20 <- readOGR(dsn=path.expand("tl_2020_13_all"),layer="tl_2020_13001_roads")
+
+
 
 ### 2 Cleaning and creating datasets for analysis
 
-# Cleaning HOLC score data
+## Cleaning HOLC score data
 HOLC_score2 <- HOLC_score %>% 
   filter(substr(GEOID20,1,2) == "13") # restricting to only GA
 
-# Cleaning HOLC map data
+## Merging attribute dataset with geography dataset
+
+# with 2020 census - need to go with this one 2796-2621=175, so no tracts were excluded
+HOLC_full <- sp::merge(ga_tracts_20, HOLC_map_ga, by = "GEOID20", all.y=T, duplicateGeoms = TRUE, na.strings = 'Missing') 
+summary(HOLC_full)
+
+tm_shape(HOLC_full) + 
+  tm_fill('HRS2020',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score by Quartile") +
+  tm_borders()
+
+## Modeling datasets - i.e., only tracts with HOLC data
 
 # All GA
 ga_ids <- HOLC_score2$GEOID20
-HOLC_map_ga <- subset(HOLC_map, GEOID20 %in% ga_ids) # restricting to only GA
+HOLC_full_georgia <- subset(HOLC_full, GEOID20 %in% ga_ids)
+plot(HOLC_full_georgia)
+
+tm_shape(HOLC_full_georgia) + 
+  tm_fill('HRS20',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score by Quartile") +
+  tm_borders()
 
 # Atlanta only
 atlanta <- HOLC_score2 %>% 
   filter(CBSA=="12060")
 atlanta_ids <- atlanta$GEOID20
-HOLC_map_atlanta <- subset(HOLC_map, GEOID20 %in% atlanta_ids)
-plot(HOLC_map_atlanta)
+HOLC_full_atlanta <- subset(HOLC_full, GEOID20 %in% atlanta_ids)
+plot(HOLC_full_atlanta)
+
+a <- tm_shape(HOLC_map_atlanta) + 
+  tm_fill('HRS20',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score by Quartile") +
+  tm_borders()
 
 # Augusta only
 augusta <- HOLC_score2 %>% 
   filter(CBSA=="12260")
 augusta_ids <- augusta$GEOID20
-HOLC_map_augusta <- subset(HOLC_map, GEOID20 %in% augusta_ids)
-plot(HOLC_map_augusta)
+HOLC_full_augusta <- subset(HOLC_full, GEOID20 %in% augusta_ids)
+plot(HOLC_full_augusta)
+
+b <- tm_shape(HOLC_full_augusta) + 
+  tm_fill('HRS20',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score by Quartile") +
+  tm_borders()
 
 # Columbus only
 columbus <- HOLC_score2 %>% 
   filter(CBSA=="17980")
 columbus_ids <- columbus$GEOID20
-HOLC_map_columbus <- subset(HOLC_map, GEOID20 %in% columbus_ids)
-plot(HOLC_map_columbus)
+HOLC_full_columbus <- subset(HOLC_full, GEOID20 %in% columbus_ids)
+plot(HOLC_full_columbus)
+
+c <- tm_shape(HOLC_full_columbus) + 
+  tm_fill('HRS20',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score by Quartile") +
+  tm_borders()
 
 # Macon only
 macon <- HOLC_score2 %>% 
   filter(CBSA=="31420")
 macon_ids <- macon$GEOID20
-HOLC_map_macon <- subset(HOLC_map, GEOID20 %in% macon_ids)
-plot(HOLC_map_macon)
+HOLC_full_macon <- subset(HOLC_full, GEOID20 %in% macon_ids)
+plot(HOLC_full_macon)
+
+d <- tm_shape(HOLC_full_macon) + 
+  tm_fill('HRS20',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score by Quartile") +
+  tm_borders()
 
 # Savannah only
 savannah <- HOLC_score2 %>% 
   filter(CBSA=="42340")
 savannah_ids <- savannah$GEOID20
-HOLC_map_savannah <- subset(HOLC_map, GEOID20 %in% savannah_ids)
-plot(HOLC_map_savannah)
+HOLC_full_savannah <- subset(HOLC_full, GEOID20 %in% savannah_ids)
+plot(HOLC_full_savannah)
+
+e <- tm_shape(HOLC_full_savannah) + 
+  tm_fill('HRS20',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score by Quartile") +
+  tm_borders()
 
 
-# Merging attribute dataset with geography dataset
+tmap_arrange(a, b, c, d, e)
 
-# with 2020 census - need to go with this one 2796-2621=175, so no tracts were excluded
-HOLC_full <- sp::merge(ga_tracts_20, HOLC_score2, by = "GEOID20", all.y=T, duplicateGeoms = TRUE, na.strings = 'Missing') 
-summary(HOLC_full)
 
 
 
@@ -121,13 +191,33 @@ summary(HOLC_full)
 # trying a subset
 HOLC_full_savannah <- HOLC_full[HOLC_full$COUNTYFP20 == "051",]
 
+HOLC_full_savannah_2 <- HOLC_full[HOLC_full$CBSA == "42340", ]
+
+MyPalette <- c("#A8FF33", "#81F0FF", "#FAFF93", "#FF9693")
+MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
 
 tm_shape(HOLC_full_savannah) + 
   tm_fill('HRS20',
           n = 4,
           style = 'quantile',
-          palette = 'BuPu') +
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score by Quartile") +
   tm_borders()
+
+
+tm_shape(HOLC_full) + 
+  tm_fill('HRS20',
+          n = 4,
+          style = 'quantile',
+          palette = MyPalette, 
+          labels = MyLabels, 
+          title = "Historic Redlining Score by Quartile") +
+  tm_borders() 
+
+
+  tm_shape(ga_roads_20) + 
+  tm_lines(lwd = 2, col = 'red') 
 
 # notes: need to figure out how many "background" census tracts we want in each map - in savannah map, I just included the whole county
 # need to figure out if we want to add more detail to the map
