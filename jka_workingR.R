@@ -21,33 +21,43 @@ pacman::p_load(tidyverse,    # general data wrangling
                readxl, 
                viridis)               
 
+
+
+
+### ARCHIVED CODE - broken right now because of 2010 census data
+
 ### Creating the datasets for redlining descriptive maps
   
 ### 1 Loading the data
   
 ## Importing the exposure geometry data 
-HOLC_map <- readOGR(dsn=path.expand("HRS2020-Shapefiles/HRS2020"),layer="HRS2020")
+HOLC_map <- readOGR(dsn=path.expand("HRS2010-Shapefiles/HRS2010"),layer="HRS2010")
+
+HOLC_map_ga <- HOLC_map %>% 
+  filter(substr(GEOID10,1,2) == "13")
+
+HOLC_map_ga <- HOLC_map[HOLC_map$METRO_NAME==c("Savannah, GA","Atlanta-Sandy Springs-Roswell")]
    
 ## Importing the exposure attribute data
-HOLC_score <- read_excel("Historic Redlining Score 2020.xlsx")
+HOLC_score <- read_excel("Historic Redlining Score 2010.xlsx")
 
 ## Importing Georgia Census Tract Geographic Boundary file
 # updated 2020 data
 ga_tracts_20 <- readOGR(dsn=path.expand("tl_2020_13_all"),layer="tl_2020_13_tract20")
-
-ga_roads_20 <- readOGR(dsn=path.expand("tl_2020_13_all"),layer="tl_2020_13001_roads")
-
+# Trying our 2010 data
+ga_tracts_10 <- readOGR(dsn=path.expand("tl_2020_13_all"),layer="tl_2020_13_tract10")
 
 ### 2 Cleaning and creating datasets for analysis
 
 ## Cleaning HOLC score data
 HOLC_score2 <- HOLC_score %>% 
-  filter(substr(GEOID20,1,2) == "13") # restricting to only GA
+  filter(substr(GEOID10,1,2) == "13") # restricting to only GA
+
 
 ## Merging attribute dataset with geography dataset
 
-# with 2020 census - need to go with this one 2796-2621=175, so no tracts were excluded
-HOLC_full <- sp::merge(ga_tracts_20, HOLC_map_ga, by = "GEOID20", all.y=T, duplicateGeoms = TRUE, na.strings = 'Missing') 
+# with 2010 census - need to go with this one 1969-2621=175, so no tracts were excluded
+HOLC_full <- sp::merge(ga_tracts_10, HOLC_map, by = "GEOID10", all.y=F, duplicateGeoms = TRUE, na.strings = 'Missing') 
 summary(HOLC_full)
 
 tm_shape(HOLC_full) + 
@@ -297,9 +307,15 @@ tm_shape(HOLC_full) +
 # need to figure out if we want to add more detail to the map
 
 
+# how to import datasets
+  full_data <- readOGR(dsn=path.expand("tempdir"),layer="full_data") # all census tracts
+  full_data_georgia <- readOGR(dsn=path.expand("tempdir"),layer="full_data_georgia") # only has census tracts with HOLC data
+  full_data_atlanta <- readOGR(dsn=path.expand("tempdir"),layer="full_data_atlanta") # only has census tracts with HOLC data
+  full_data_augusta <- readOGR(dsn=path.expand("tempdir"),layer="full_data_augusta") # only has census tracts with HOLC data
+  full_data_macon <- readOGR(dsn=path.expand("tempdir"),layer="full_data_macon") # only has census tracts with HOLC data
+  full_data_savannah <- readOGR(dsn=path.expand("tempdir"),layer="full_data_savannah") # only has census tracts with HOLC data
+  full_data_columbus <- readOGR(dsn=path.expand("tempdir"),layer="full_data_columbus") # only has census tracts with HOLC data
   
   
   
-  
-
 
