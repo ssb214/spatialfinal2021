@@ -159,6 +159,10 @@ e <- tm_shape(HOLC_full_savannah) +
 tmap_arrange(a, b, c, d, e)
 
 
+
+
+
+
 ## Exporting datasets
 
 
@@ -172,9 +176,58 @@ writeOGR(obj=HOLC_full_savannah, dsn="tempdir", layer="HOLC_full_savannah", driv
 writeOGR(obj=HOLC_full_columbus, dsn="tempdir", layer="HOLC_full_columbus", driver="ESRI Shapefile")
 
 
-## Subsetting full_data with EJ screen variables 
+## Subsetting full_data
 full_data <- readOGR(dsn=path.expand("tempdir"),layer="full_data")
+summary(full_data)
 
+# All GA
+
+ga_ids <- HOLC_score2$GEOID20
+full_data_georgia <- subset(full_data, GEOID20 %in% ga_ids)
+summary(full_data_georgia)
+writeOGR(obj=full_data_georgia, dsn="tempdir", layer="full_data_georgia", driver="ESRI Shapefile")
+
+
+# Atlanta only
+atlanta <- HOLC_score2 %>% 
+  filter(CBSA=="12060")
+atlanta_ids <- atlanta$GEOID20
+full_data_atlanta <- subset(full_data, GEOID20 %in% atlanta_ids)
+summary(full_data_atlanta)
+writeOGR(obj=full_data_atlanta, dsn="tempdir", layer="full_data_atlanta", driver="ESRI Shapefile")
+
+# Augusta only
+augusta <- HOLC_score2 %>% 
+  filter(CBSA=="12260")
+augusta_ids <- augusta$GEOID20
+full_data_augusta<- subset(full_data, GEOID20 %in% augusta_ids)
+summary(full_data_augusta)
+writeOGR(obj=full_data_augusta, dsn="tempdir", layer="full_data_augusta", driver="ESRI Shapefile")
+
+# Columbus only
+columbus <- HOLC_score2 %>% 
+  filter(CBSA=="17980")
+columbus_ids <- columbus$GEOID20
+full_data_columbus <- subset(full_data, GEOID20 %in% columbus_ids)
+summary(full_data_columbus)
+writeOGR(obj=full_data_columbus, dsn="tempdir", layer="full_data_columbus", driver="ESRI Shapefile")
+
+# Macon only
+macon <- HOLC_score2 %>% 
+  filter(CBSA=="31420")
+macons_ids <- macon$GEOID20
+full_data_macon <- subset(full_data, GEOID20 %in% macon_ids)
+summary(full_data_macon)
+writeOGR(obj=full_data_macon, dsn="tempdir", layer="full_data_macon", driver="ESRI Shapefile")
+
+
+# Savannah only
+savannah <- HOLC_score2 %>% 
+  filter(CBSA=="42340")
+savannah_ids <- savannah$GEOID20
+full_data_savannah <- subset(full_data, GEOID20 %in% savannah_ids)
+summary(full_data_savannah)
+writeOGR(obj=full_data_savannah, dsn="tempdir", layer="full_data_savannah", driver="ESRI Shapefile")
 
 
 
