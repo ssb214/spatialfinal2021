@@ -10,7 +10,7 @@ library(readxl)
 library(rgdal)
 library(readr)
 
-# Data
+# Data files
 
 ## outcome data
 ej_ga <- read_csv("Data/ej_ga.csv", 
@@ -58,10 +58,61 @@ summary(full_data)
 
 writeOGR(obj=full_data, dsn="Data/tempdir", layer="full_data", driver="ESRI Shapefile")
 
+#### final working data ####
+
+full_data <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data") # all census tracts
+
+full_data_georgia <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_georgia") # only have census tracts with HOLC data
+full_data_atlanta <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_atlanta") # only have census tracts with HOLC data
+full_data_augusta <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_augusta") # only have census tracts with HOLC data
+full_data_macon <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_macon") # only have census tracts with HOLC data
+full_data_savannah <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_savannah") # only have census tracts with HOLC data
+full_data_columbus <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_columbus") # only have census tracts with HOLC data
+
 #### Exploring data ####
 
+a <- tm_shape(full_data_atlanta) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Atlanta - Diesel PM')
+
+b <- tm_shape(full_data_augusta) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Augusta - Diesel PM')
+
+c <- tm_shape(full_data_macon) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Macon - Diesel PM')
+
+d <- tm_shape(full_data_savannah) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Savannah - Diesel PM')
+
+e <- tm_shape(full_data_columbus) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Columbus - Diesel PM')
+
+tmap_arrange(a, b, c, d, e)
 
 #### Example Code ####
 
+# Reading and writing a .shp file 
 x <- readOGR(dsn=path.expand("Data/tempdir"),layer="HOLC_full")
 writeOGR(obj=full_data, dsn="Data/tempdir", layer="full_data", driver="ESRI Shapefile")
+
+# finding nas 
+apply(is.na(ej_ga2), 2, sum)
