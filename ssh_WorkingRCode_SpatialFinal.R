@@ -2,15 +2,22 @@
 
 # Packages 
 
-library(sf)
 library(tmap)
 library(tidyverse)
 library(dplyr)
+library(sp)
+library(readxl)
 
 # Data
 
-## outcome data
-EJscreen <- read.csv("Data/ej_ga.csv")
+## outcome data (making everything numeric instead of character)
+ga_hi <- read_excel("Data/nata2014_ga_allhi.xlsx", 
+                    col_types = c("numeric", "numeric", "numeric", 
+                                  "numeric", "numeric", "numeric", 
+                                  "numeric", "numeric", "numeric", 
+                                  "numeric", "numeric", "numeric", 
+                                  "numeric", "numeric", "numeric", 
+                                  "numeric"))
 
 ## exposure geometry data 
 HOLC_map <- readOGR(dsn=path.expand("Data/HRS2020-Shapefiles/HRS2020"),
@@ -26,7 +33,4 @@ HOLC_score$GEOID20 <- paste0("0", HOLC_score$GEOID20)
 
 #### Exploring data ####
 
-tm_shape(HOLC_map) +
-  tm_polygons()
 
-View(EJscreen)
