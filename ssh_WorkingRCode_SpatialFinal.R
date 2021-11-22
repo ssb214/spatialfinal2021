@@ -18,38 +18,38 @@ ej_ga <- read_csv("Data/ej_ga.csv",
   select('ID', 'DSLPM', 'CANCER', 'RESP')
 
 ## exposure geometry data 
-HOLC_map <- readOGR(dsn=path.expand("Data/HRS2020-Shapefiles/HRS2020"),
-                    layer="HRS2020")
+HOLC_map <- readOGR(dsn=path.expand("Data/HRS2010-Shapefiles/HRS2010"),
+                    layer="HRS2010")
 ## exposure attribute data
-HOLC_score <- read_excel("Data/Historic Redlining Score 2020.xlsx")
+HOLC_score <- read_excel("Data/Historic Redlining Score 2010.xlsx")
 
 ## Importing Georgia Census Tract Geographic Boundary file
 ## updated 2020 data
  
-ga_tracts_20 <- readOGR(dsn=path.expand("Data/tl_2020_13_all"),layer="tl_2020_13_tract20")
+ga_tracts_10 <- readOGR(dsn=path.expand("Data/tl_2020_13_all"),layer="tl_2020_13_tract10")
 
 #### Data editing ####
 
 # Cleaning HOLC score data
 HOLC_score2 <- HOLC_score %>% 
-  filter(substr(GEOID20,1,2) == "13") # restricting to only GA
+  filter(substr(GEOID10,1,2) == "13") # restricting to only GA
 
 # cleaning EJScreen data 
 
 ej_ga2 <- ej_ga %>% 
-  mutate(GEOID20 = substr(ej_ga$ID, 1, 11)) %>% 
+  mutate(GEOID10 = substr(ej_ga$ID, 1, 11)) %>% 
   select(-'ID')
 
-ej_ga2 <- ej_ga2[!duplicated(ej_ga2$GEOID20),]
+ej_ga2 <- ej_ga2[!duplicated(ej_ga2$GEOID10),]
 
-ej_ga2 <- sp::merge(ga_tracts_20, ej_ga2, 
-                    by = 'GEOID20', 
+ej_ga2 <- sp::merge(ga_tracts_10, ej_ga2, 
+                    by = 'GEOID10', 
                     all.y = T,
                     duplicateGeoms = T,
                     na.strings = 'Missing')
 
 full_data <- sp::merge(ej_ga2, HOLC_score2, 
-                       by = 'GEOID20', 
+                       by = 'GEOID10', 
                        all.y = T,
                        duplicateGeoms = T,
                        na.strings = 'Missing')
