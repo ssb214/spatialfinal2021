@@ -69,44 +69,190 @@ full_data_macon <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_maco
 full_data_savannah <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_savannah") # only have census tracts with HOLC data
 full_data_columbus <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_columbus") # only have census tracts with HOLC data
 
-#### Exploring data ####
 
-a <- tm_shape(full_data_atlanta) +
+
+#### 15 panel map ####
+
+# Diesel PM
+
+# Finding universal quantile 
+quantile(full_data_georgia$DSLPM, na.rm = T)
+
+dpm_atl <- tm_shape(full_data_atlanta) +
   tm_fill('DSLPM',
-          style = 'quantile',
+          style = 'fixed',
+          breaks = c(0.3808355, 0.5959913, 0.7397038, 0.9065605, 1.4902905),
           palette = 'BuPu') +
   tm_borders() +
-  tm_layout(main.title = 'Atlanta - Diesel PM')
+  tm_layout(main.title = 'Diesel PM: \nAtlanta',
+            main.title.size = 0.9,
+            legend.show = F)
 
-b <- tm_shape(full_data_augusta) +
+dpm_aug <- tm_shape(full_data_augusta) +
   tm_fill('DSLPM',
-          style = 'quantile',
+          style = 'fixed',
+          breaks = c(0.3808355, 0.5959913, 0.7397038, 0.9065605, 1.4902905),
           palette = 'BuPu') +
   tm_borders() +
-  tm_layout(main.title = 'Augusta - Diesel PM')
+  tm_layout(main.title = 'Diesel PM: \nAugusta',
+            main.title.size = 0.9,
+            legend.show = F)
 
-c <- tm_shape(full_data_macon) +
+dpm_mac <- tm_shape(full_data_macon) +
   tm_fill('DSLPM',
-          style = 'quantile',
+          style = 'fixed',
+          breaks = c(0.3808355, 0.5959913, 0.7397038, 0.9065605, 1.4902905),
           palette = 'BuPu') +
   tm_borders() +
-  tm_layout(main.title = 'Macon - Diesel PM')
+  tm_layout(main.title = 'Diesel PM: \nMacon',
+            main.title.size = 0.9,
+            legend.show = F)
 
-d <- tm_shape(full_data_savannah) +
+dpm_sav <- tm_shape(full_data_savannah) +
   tm_fill('DSLPM',
-          style = 'quantile',
+          style = 'fixed',
+          breaks = c(0.3808355, 0.5959913, 0.7397038, 0.9065605, 1.4902905),
           palette = 'BuPu') +
   tm_borders() +
-  tm_layout(main.title = 'Savannah - Diesel PM')
+  tm_layout(main.title = 'Diesel PM: \nSavannah',
+            main.title.size = 0.9,
+            legend.show = F)
 
-e <- tm_shape(full_data_columbus) +
+dpm_col <- tm_shape(full_data_columbus) +
   tm_fill('DSLPM',
-          style = 'quantile',
-          palette = 'BuPu') +
+          style = 'fixed',
+          breaks = c(0.3808355, 0.5959913, 0.7397038, 0.9065605, 1.4902905),
+          palette = 'BuPu',
+          title = 'Diesel PM') +
   tm_borders() +
-  tm_layout(main.title = 'Columbus - Diesel PM')
+  tm_layout(main.title = 'Diesel PM: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = 0.5)
 
-tmap_arrange(a, b, c, d, e)
+# RESP
+
+# Finding universal quantile 
+quantile(full_data_georgia$RESP, na.rm = T)
+
+res_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('RESP',
+          style = 'fixed',
+          breaks = c(0.4995681, 0.6531644, 0.6916693, 0.7364947, 0.8608944),
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nAtlanta',
+            main.title.size = 0.9,
+            legend.show = F)
+
+res_aug <- tm_shape(full_data_augusta) +
+  tm_fill('RESP',
+          style = 'fixed',
+          breaks = c(0.4995681, 0.6531644, 0.6916693, 0.7364947, 0.8608944),
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nAugusta',
+            main.title.size = 0.9,
+            legend.show = F)
+
+res_mac <- tm_shape(full_data_macon) +
+  tm_fill('RESP',
+          style = 'fixed',
+          breaks = c(0.4995681, 0.6531644, 0.6916693, 0.7364947, 0.8608944),
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nMacon',
+            main.title.size = 0.9,
+            legend.show = F)
+
+res_sav <- tm_shape(full_data_savannah) +
+  tm_fill('RESP',
+          style = 'fixed',
+          breaks = c(0.4995681, 0.6531644, 0.6916693, 0.7364947, 0.8608944),
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nSavannah',
+            main.title.size = 0.9,
+            legend.show = F)
+
+res_col <- tm_shape(full_data_columbus) +
+  tm_fill('RESP',
+          style = 'fixed',
+          breaks = c(0.4995681, 0.6531644, 0.6916693, 0.7364947, 0.8608944),
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = 0.5)
+
+# Cancer
+
+# Finding universal quantile 
+quantile(full_data_georgia$CANCER, na.rm = T)
+
+can_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('CANCER',
+          style = 'fixed',
+          breaks = c(34.64623, 46.95583, 52.63795, 55.89212, 69.16529),
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nAtlanta',
+            main.title.size = 0.9,
+            legend.show = F)
+
+can_aug <- tm_shape(full_data_augusta) +
+  tm_fill('CANCER',
+          style = 'fixed',
+          breaks = c(34.64623, 46.95583, 52.63795, 55.89212, 69.16529),
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nAugusta',
+            main.title.size = 0.9,
+            legend.show = F)
+
+can_mac <- tm_shape(full_data_macon) +
+  tm_fill('CANCER',
+          style = 'fixed',
+          breaks = c(34.64623, 46.95583, 52.63795, 55.89212, 69.16529),
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nMacon',
+            main.title.size = 0.9,
+            legend.show = F)
+
+can_sav <- tm_shape(full_data_savannah) +
+  tm_fill('CANCER',
+          style = 'fixed',
+          breaks = c(34.64623, 46.95583, 52.63795, 55.89212, 69.16529),
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nSavannah',
+            main.title.size = 0.9,
+            legend.show = F)
+
+can_col <- tm_shape(full_data_columbus) +
+  tm_fill('CANCER',
+          style = 'fixed',
+          breaks = c(34.64623, 46.95583, 52.63795, 55.89212, 69.16529),
+          palette = 'PuBu',
+          title = 'Cancer Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = 0.5)
+
+tmap_arrange(dpm_atl, dpm_aug, dpm_sav, dpm_mac, dpm_col,
+             res_atl, res_aug, res_sav, res_mac, res_col,
+             can_atl, can_aug, can_sav, can_mac, can_col,
+             nrow = 3,
+             ncol = 5)
+
+
+
+
 
 #### Example Code ####
 
