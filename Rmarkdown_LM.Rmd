@@ -24,67 +24,564 @@ Objective:
 pacman::p_load(tidyverse, # General data wrangling
 raster,
 rgdal,
+tidycensus,
 sp,
 readxl,
+tigris,
+spatialreg,
+spdep, # Functions for creating spatial weight, spatial analysis
 sf, # manage spatial data using simple features
 tmap) # mapping of sf or sp data
 ```
 
+#Loading data
 
-# Loading data
-```{r load data}
-#outcome data
-EJscreen <- read.csv("Data/ej_ga.csv")
+```{r ENVIRO desc maps}
+setwd("C:/Users/lmoubad/OneDrive - Emory University/spatial-epi/spatialfinal2021")
 
-#exposure geometry data 
-HOLC_map <- readOGR(dsn=path.expand("Data/HRS2020-Shapefiles/HRS2020"),
-                            layer="HRS2020")
-#exposure attribute data
-HOLC_score <- read_excel("Data/Historic Redlining Score 2020.xlsx")
+
+  full_data <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data")
+  full_data_georgia <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_georgia")
+  full_data_atlanta <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_atlanta")
+  full_data_augusta <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_augusta")
+  full_data_macon <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_macon")
+  full_data_savannah <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_savannah")
+  full_data_columbus <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_columbus")
+
+
+
+```
+# Environmental 15 panel maps
+```{r env desc maps}
+MyPalette_HOLC <- c("#397A1C", "#3581D9", "#FFFF33", "#E31A1C")
+
+MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
+
+map1 <-  tm_shape(full_data_atlanta) + 
+  tm_fill('RESP',
+          n = 4,
+          style = 'quantile',
+          palette = "Blues", 
+          labels = MyLabels, 
+          title = "RESP") +
+  tm_layout(title = "RESP in Atlanta") +
+  tm_borders()
+
+map2 <- tm_shape(full_data_macon) + 
+  tm_fill('RESP',
+          n = 4,
+          style = 'quantile',
+          palette = "Blues", 
+          labels = MyLabels, 
+          title = "RESP") +
+  tm_layout(title = "RESP in Macon") +
+  tm_borders()
+  
+  map3 <- tm_shape(full_data_columbus) + 
+  tm_fill('RESP',
+          n = 4,
+          style = 'quantile',
+          palette = "Blues", 
+          labels = MyLabels, 
+          title = "RESP") +
+  tm_layout(title = "RESP in Columbus") +
+  tm_borders()
+  
+    map4 <- tm_shape(full_data_augusta) + 
+  tm_fill('RESP',
+          n = 4,
+          style = 'quantile',
+          palette = "Blues", 
+          labels = MyLabels, 
+          title = "RESP") +
+  tm_layout(title = "RESP in Augusta") +
+  tm_borders()
+  
+   
+  map5 <- tm_shape(full_data_savannah) + 
+  tm_fill('RESP',
+          n = 4,
+          style = 'quantile',
+          palette = "Blues", 
+          labels = MyLabels, 
+          title = "RESP") +
+  tm_layout(title = "RESP in Augusta") +
+  tm_borders()
+  
+ 
+      
+  map6 <- tm_shape(full_data_atlanta) + 
+  tm_fill('DSLPM',
+          n = 4,
+          style = 'quantile',
+          palette = "Greens", 
+          labels = MyLabels, 
+          title = "DSLPM") +
+  tm_layout(title = "DSLPM in Atlanta") +
+  tm_borders()
+
+    map7 <- tm_shape(full_data_macon) + 
+  tm_fill('DSLPM',
+          n = 4,
+          style = 'quantile',
+          palette = "Greens", 
+          labels = MyLabels, 
+          title = "DSLPM") +
+  tm_layout(title = "DSLPM in Macon") +
+  tm_borders()
+    
+        map8 <- tm_shape(full_data_columbus) + 
+  tm_fill('DSLPM',
+          n = 4,
+          style = 'quantile',
+          palette = "Greens", 
+          labels = MyLabels, 
+          title = "DSLPM") +
+  tm_layout(title = "DSLPM in Columbus") +
+  tm_borders()
+
+        map9 <- tm_shape(full_data_augusta) + 
+  tm_fill('DSLPM',
+          n = 4,
+          style = 'quantile',
+          palette = "Greens", 
+          labels = MyLabels, 
+          title = "DSLPM") +
+  tm_layout(title = "DSLPM in Augusta") +
+  tm_borders()
+        
+             map10 <- tm_shape(full_data_savannah) + 
+  tm_fill('DSLPM',
+          n = 4,
+          style = 'quantile',
+          palette = "Greens", 
+          labels = MyLabels, 
+          title = "DSLPM") +
+  tm_layout(title = "DSLPM in Savannah") +
+  tm_borders()
+             
+             
+        
+  map11 <- tm_shape(full_data_atlanta) + 
+  tm_fill('CANCER',
+          n = 4,
+          style = 'quantile',
+          palette = "Purples", 
+          labels = MyLabels, 
+          title = "CANCER") +
+  tm_layout(title = "CANCER in Atlanta") +
+  tm_borders()
+
+    map12 <- tm_shape(full_data_macon) + 
+  tm_fill('CANCER',
+          n = 4,
+          style = 'quantile',
+          palette = "Purples", 
+          labels = MyLabels, 
+          title = "CANCER") +
+  tm_layout(title = "CANCER in Macon") +
+  tm_borders()
+    
+        map13 <- tm_shape(full_data_columbus) + 
+  tm_fill('CANCER',
+          n = 4,
+          style = 'quantile',
+          palette = "Purples", 
+          labels = MyLabels, 
+          title = "CANCER") +
+  tm_layout(title = "CANCER in Columbus") +
+  tm_borders()
+
+        map14 <- tm_shape(full_data_augusta) + 
+  tm_fill('CANCER',
+          n = 4,
+          style = 'quantile',
+          palette = "Purples", 
+          labels = MyLabels, 
+          title = "CANCER") +
+  tm_layout(title = "CANCER in Augusta") +
+  tm_borders()
+        
+             map15 <- tm_shape(full_data_savannah) + 
+    tm_fill('CANCER',
+          n = 4,
+          style = 'quantile',
+          palette = "Purples", 
+          labels = MyLabels, 
+          title = "CANCER") +
+  tm_layout(title = "CANCER in Savannah") +
+  tm_borders()
+
+              tmap_arrange(map1, map2, map3, map4, map5, map6,map7,map8,map9,map10, map11,map12, 
+                           map13, map14, map15, nrow=3, ncol=5)
+```
+
+# Create neighbors 
+Creating queen contiguity neighbors among each city (spatial islands)
+```{r neighbors}
+
+#create neighbors GA
+gnb <- poly2nb(full_data_georgia)
+g_listw <- nb2listw(gnb, style = 'W')
+
+#create neighbors atlanta
+anb <- poly2nb(full_data_atlanta)
+a_listw <- nb2listw(anb, style = 'W')
+
+#create neighbors macon
+mnb <- poly2nb(full_data_macon)
+m_listw <- nb2listw(mnb, style = 'W')
+
+#create neighbors columbus
+cnb <- poly2nb(full_data_columbus)
+c_listw <- nb2listw(cnb, style = 'W')
+
+#create neighbors augusta
+aanb <- poly2nb(full_data_augusta)
+aa_listw <- nb2listw(aanb, style = 'W')
+
+#create neighbors columbus
+snb <- poly2nb(full_data_savannah)
+s_listw <- nb2listw(snb, style = 'W')
+
+```
+
+# Aspatial regression: Georgia
+Determining whether there is evidence of *any* clustering as justification for subsequent spatial analyses.
+```{r morans I GA}
+#specify dependent variables for lm 
+outcomes<- c("RESP", "DSLPM", "CANCER")
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_georgia)
+assign(model,m)
+}
+
+#RESP
+summary(model1)
+#sig and positively associated 
+AIC(model1)
+
+summary(model2)
+#not associated 
+
+summary(model3)
+#sig and positively associated 
+
+#RESP
+lm.morantest(model1, listw = g_listw, zero.policy = T)
+#morans: 0.933920024     , p: <2.2 e-16
+
+#DSLPM
+lm.morantest(model2, listw = g_listw, zero.policy = T)
+#morans:  0.897474442     , p: <2.2 e-16
+
+#CANCER
+lm.morantest(model3, listw = g_listw, zero.policy = T)
+#morans:  0.933282563     , p: <2.2 e-16
+
+```
+#Spatial regression: Spatial Durbin Model (SDM) among all cities 
+```{r SDM GA}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_georgia, listw = g_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
 ```
 
 
-# Explore shapefiles (HIDE SECTION BEFORE SUBMISSION)
-Source for code below: https://www.neonscience.org/resources/learning-hub/tutorials/dc-open-shapefiles-r
-```{r explore}
-# view just the class for the shapefile
-class(HOLC)
+# Aspatial regression: Atlanta
+```{r morans I ATL}
 
-# view just the crs for the shapefile
-crs(HOLC)
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_atlanta)
+assign(model,m)
+}
 
-# view just the extent for the shapefile
-extent(HOLC)
+summary(model1)
+#sig and positively associated 
+AIC(model1)
 
-# view all metadata at same time
-HOLC
+summary(model2)
+#non-sig and positively associated 
 
-# alternate way to view attributes 
-HOLC_map@data
+summary(model3)
+#sig and positively associated 
 
-# view a summary of metadata & attributes associated with the spatial object
-summary(HOLC_map)
+#RESP
+lm.morantest(model1, listw = a_listw, zero.policy = T)
+#morans: 0.710699601, p: <2.2 e-16
 
-#add leading zero
-HOLC_score$GEOID20 <- paste0("0", HOLC_score$GEOID20)
+#DSLPM
+lm.morantest(model2, listw = a_listw, zero.policy = T)
+#morans:  0.810299413, p: <2.2 e-16
 
-#multiple ways to get the same map:
-plot(HOLC_map)
-tm_shape(HOLC_map) + tm_polygons()
-
-tm_shape(HOLC_map) + tm_polygons("Shape_Leng") 
-```
-
-```{r join}
-
-
-library(tidycensus)
-#add census tract
-geo_id<-append_geoid(EJscreen, 'tr')
-
-#return number of NA geoids
-sum(is.na(geo_id$geoid)) 
-#11 NA geoid
+#CANCER
+lm.morantest(model3, listw = a_listw, zero.policy = T)
+#morans:  0.684958693, p: <2.2 e-16
 
 ```
+
+#Spatial regression: SDM in Atlanta
+```{r SDM ATL}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_atlanta, listw = a_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+```
+
+# Aspatial regression: Macon
+```{r morans I macon}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_macon)
+assign(model,m)
+}
+
+summary(model1)
+#not associated
+AIC(model1)
+
+summary(model2)
+#not associated
+
+summary(model3)
+#not associated
+
+#RESP
+lm.morantest(model1, listw = m_listw, zero.policy = T)
+#morans: 0.36166334 , p: 0.006558
+
+#DSLPM
+lm.morantest(model2, listw = m_listw, zero.policy = T)
+#morans:  0.41996037, p: 0.002542
+
+#CANCER
+lm.morantest(model3, listw = m_listw, zero.policy = T)
+#morans:  0.33689573    , p:  0.009534
+
+```
+#Spatial regression: SDM in Macon
+```{r SDM macon}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_macon, listw = m_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+```
+
+# Aspatial regression: Columbus
+```{r morans I columbus}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_columbus)
+assign(model,m)
+}
+
+summary(model1)
+#not associated
+AIC(model1)
+
+summary(model2)
+#not associated
+
+summary(model3)
+#not associated
+
+#RESP
+lm.morantest(model1, listw = c_listw, zero.policy = T)
+#morans: 0.19419672 , p: 0.01714
+
+#DSLPM
+lm.morantest(model2, listw = c_listw, zero.policy = T)
+#morans:  0.50627630, p: 1.037e-05
+
+#CANCER
+lm.morantest(model3, listw = c_listw, zero.policy = T)
+#morans:  0.17682483     , p:  0.02288
+
+```
+
+#Spatial regression: SDM in Columbus
+```{r SDM columbus}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_columbus, listw = c_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+```
+# Aspatial regression: Augusta
+```{r morans I augusta}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_augusta)
+assign(model,m)
+}
+
+summary(model1)
+#not associated
+AIC(model1)
+
+summary(model2)
+#not associated
+
+summary(model3)
+#sig and positively associated
+
+#RESP
+lm.morantest(model1, listw = aa_listw, zero.policy = T)
+#morans: 0.26835958  , p: 0.003272
+
+#DSLPM
+lm.morantest(model2, listw = aa_listw, zero.policy = T)
+#morans:  0.36258233, p: 0.0003841
+
+#CANCER
+lm.morantest(model3, listw = aa_listw, zero.policy = T)
+#morans:  0.26876071     , p:  0.003245
+
+```
+
+#Spatial regression: SDM in Augusta
+```{r SDM augusta}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_augusta, listw = aa_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+```
+
+# Aspatial regression: Savannah
+```{r morans I savannah}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_savannah)
+assign(model,m)
+}
+
+summary(model1)
+#not associated
+AIC(model1)
+
+summary(model2)
+#not associated
+
+summary(model3)
+#sig and positively associated
+
+#RESP
+lm.morantest(model1, listw = s_listw, zero.policy = T)
+#morans: 0.55149243  , p: 9.7e-07
+
+#DSLPM
+lm.morantest(model2, listw = s_listw, zero.policy = T)
+#morans:  0.73040748, p: 4.246e-10
+
+#CANCER
+lm.morantest(model3, listw = s_listw, zero.policy = T)
+#morans:  0.42231295     , p:  8.289e-05
+
+```
+
+#Spatial regression: SDM in Savannah
+```{r SDM savannah}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_savannah, listw = s_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+```
+
 
