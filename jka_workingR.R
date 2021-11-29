@@ -162,7 +162,7 @@ tmap_arrange(a, b, c, d, e)
 ### trying google maps
 
 library(ggmap)
-register_google(key = "")
+register_google(key = "AIzaSyDoqRrLTPjuz0V7----1qkkuLKF-FPDkYw")
 
 ### Atlanta 
 qmap('Atlanta, GA', zoom = 11) +
@@ -184,10 +184,10 @@ atlanta_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_atlanta, 
 # merge the shapefile data with the social housing data, using the neighborhood ID
 points_atlanta_2 <- merge(points_atlanta, full_data_atlanta, by.x='id', by.y='GEOID10', all.x=TRUE)
 
-points_atlanta_2$NQHRS10 <- sapply(points_atlanta_2$NQHRS10, as.factor)
+points_atlanta_2$MQHRS10 <- sapply(points_atlanta_2$MQHRS10, as.factor)
 
 # Plot
-atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=NQHRS10), data=points_atlanta_2, color='black') + 
+atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=points_atlanta_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
                                "2" = "Medium (Q2)", 
@@ -224,10 +224,10 @@ augusta_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_augusta, 
 # merge the shapefile data with the social housing data, using the neighborhood ID
 points_augusta_2 <- merge(points_augusta, full_data_augusta, by.x='id', by.y='GEOID10', all.x=TRUE)
 
-points_augusta_2$NQHRS10 <- sapply(points_augusta_2$NQHRS10, as.factor)
+points_augusta_2$MQHRS10 <- sapply(points_augusta_2$MQHRS10, as.factor)
 
 # Plot
-augusta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=NQHRS10), data=points_augusta_2, color='black') + 
+augusta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=points_augusta_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
                                "2" = "Medium (Q2)", 
@@ -264,10 +264,10 @@ columbus_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_columbus
 # merge the shapefile data with the social housing data, using the neighborhood ID
 points_columbus_2 <- merge(points_columbus, full_data_columbus, by.x='id', by.y='GEOID10', all.x=TRUE)
 
-points_columbus_2$NQHRS10 <- sapply(points_columbus_2$NQHRS10, as.factor)
+points_columbus_2$MQHRS10 <- sapply(points_columbus_2$MQHRS10, as.factor)
 
 # Plot
-columbus_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=NQHRS10), data=points_columbus_2, color='black') + 
+columbus_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=points_columbus_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
                                "2" = "Medium (Q2)", 
@@ -304,13 +304,13 @@ macon_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_macon, fill
 # merge the shapefile data with the social housing data, using the neighborhood ID
 points_macon_2 <- merge(points_macon, full_data_macon, by.x='id', by.y='GEOID10', all.x=TRUE)
 
-points_macon_2$NQHRS10 <- sapply(points_macon_2$NQHRS10, as.factor)
+points_macon_2$MQHRS10 <- sapply(points_macon_2$MQHRS10, as.factor)
 
 macon_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_macon_2, fill=NQHRS10) +
   geom_polygon(aes(x=long,y=lat, group=group), data=points_macon_2, color='black', fill=NA)
 
 # Plot
-macon_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=NQHRS10), data=points_macon_2, color='black') + 
+macon_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=points_macon_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
                                "2" = "Medium (Q2)", 
@@ -347,10 +347,10 @@ savannah_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_savannah
 # merge the shapefile data with the social housing data, using the neighborhood ID
 points_savannah_2 <- merge(points_savannah, full_data_savannah, by.x='id', by.y='GEOID10', all.x=TRUE)
 
-points_savannah_2$NQHRS10 <- sapply(points_savannah_2$NQHRS10, as.factor)
+points_savannah_2$MQHRS10 <- sapply(points_savannah_2$MQHRS10, as.factor)
 
 # Plot
-savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=NQHRS10), data=points_savannah_2, color='black') + 
+savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=points_savannah_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
                                "2" = "Medium (Q2)", 
