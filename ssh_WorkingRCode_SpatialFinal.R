@@ -69,9 +69,167 @@ full_data_macon <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_maco
 full_data_savannah <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_savannah") # only have census tracts with HOLC data
 full_data_columbus <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_columbus") # only have census tracts with HOLC data
 
+#### 15 panel map - local quantiles ####
+
+# Diesel PM
+
+dpm_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nAtlanta',
+            main.title.size = 0.9,
+            legend.outside = T)
 
 
-#### 15 panel map ####
+dpm_aug <- tm_shape(full_data_augusta) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nAugusta',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+dpm_mac <- tm_shape(full_data_macon) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nMacon',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+dpm_sav <- tm_shape(full_data_savannah) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nSavannah',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+dpm_col <- tm_shape(full_data_columbus) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu',
+          title = 'Diesel PM') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+# RESP
+
+# Finding universal quantile 
+quantile(full_data_georgia$RESP, na.rm = T)
+
+res_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nAtlanta',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+res_aug <- tm_shape(full_data_augusta) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nAugusta',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+res_mac <- tm_shape(full_data_macon) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nMacon',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+res_sav <- tm_shape(full_data_savannah) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nSavannah',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+res_col <- tm_shape(full_data_columbus) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+# Cancer
+
+# Finding universal quantile 
+quantile(full_data_georgia$CANCER, na.rm = T)
+
+can_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nAtlanta',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+can_aug <- tm_shape(full_data_augusta) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nAugusta',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+can_mac <- tm_shape(full_data_macon) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nMacon',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+can_sav <- tm_shape(full_data_savannah) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nSavannah',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+can_col <- tm_shape(full_data_columbus) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu',
+          title = 'Cancer Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T)
+
+tmap_arrange(dpm_atl, dpm_aug, dpm_sav, dpm_mac, dpm_col,
+             res_atl, res_aug, res_sav, res_mac, res_col,
+             can_atl, can_aug, can_sav, can_mac, can_col,
+             nrow = 3,
+             ncol = 5)
+
+
+#### 15 panel map - full data quantiles ####
 
 # Diesel PM
 
@@ -250,8 +408,13 @@ tmap_arrange(dpm_atl, dpm_aug, dpm_sav, dpm_mac, dpm_col,
              nrow = 3,
              ncol = 5)
 
+#### histograms ####
 
+hist(full_data_georgia$CANCER)
+hist(full_data_georgia$DSLPM)
+hist(full_data_georgia$RESP)
 
+hist(full_data_atlanta$RESP)
 
 
 #### Example Code ####
