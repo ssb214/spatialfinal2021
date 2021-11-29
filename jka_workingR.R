@@ -162,7 +162,7 @@ tmap_arrange(a, b, c, d, e)
 ### trying google maps
 
 library(ggmap)
-register_google(key = "AIzaSyDoqRrLTPjuz0V7----1qkkuLKF-FPDkYw")
+register_google(key = "")
 
 ### Atlanta 
 qmap('Atlanta, GA', zoom = 11) +
