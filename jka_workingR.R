@@ -42,7 +42,7 @@ MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
 ga_ids <- HOLC_score2$GEOID10
 full_data_georgia <- subset(full_data, GEOID10 %in% ga_ids)
 summary(full_data_georgia)
-writeOGR(obj=full_data_georgia, dsn="tempdir", layer="full_data_georgia", driver="ESRI Shapefile")
+# writeOGR(obj=full_data_georgia, dsn="tempdir", layer="full_data_georgia", driver="ESRI Shapefile")
 
 # Atlanta only
 atlanta <- HOLC_score2 %>% 
@@ -50,7 +50,7 @@ atlanta <- HOLC_score2 %>%
 atlanta_ids <- atlanta$GEOID10
 full_data_atlanta <- subset(full_data, GEOID10 %in% atlanta_ids)
 summary(full_data_atlanta)
-writeOGR(obj=full_data_atlanta, dsn="tempdir", layer="full_data_atlanta", driver="ESRI Shapefile")
+# writeOGR(obj=full_data_atlanta, dsn="tempdir", layer="full_data_atlanta", driver="ESRI Shapefile")
 
 a <- tm_shape(full_data_atlanta) + 
   tm_fill('HRS10',
@@ -65,13 +65,14 @@ a <- tm_shape(full_data_atlanta) +
 
 a
 
+
 # Augusta only
 augusta <- HOLC_score2 %>% 
   filter(CBSA=="12260")
 augusta_ids <- augusta$GEOID10
 full_data_augusta<- subset(full_data, GEOID10 %in% augusta_ids)
 summary(full_data_augusta)
-writeOGR(obj=full_data_augusta, dsn="tempdir", layer="full_data_augusta", driver="ESRI Shapefile")
+# writeOGR(obj=full_data_augusta, dsn="tempdir", layer="full_data_augusta", driver="ESRI Shapefile")
 
 b <- tm_shape(full_data_augusta) + 
   tm_fill('HRS10',
@@ -92,7 +93,7 @@ columbus <- HOLC_score2 %>%
 columbus_ids <- columbus$GEOID10
 full_data_columbus <- subset(full_data, GEOID10 %in% columbus_ids)
 summary(full_data_columbus)
-writeOGR(obj=full_data_columbus, dsn="tempdir", layer="full_data_columbus", driver="ESRI Shapefile")
+# writeOGR(obj=full_data_columbus, dsn="tempdir", layer="full_data_columbus", driver="ESRI Shapefile")
 
 c <- tm_shape(full_data_columbus) + 
   tm_fill('HRS10',
@@ -113,7 +114,7 @@ macon <- HOLC_score2 %>%
 macon_ids <- macon$GEOID10
 full_data_macon <- subset(full_data, GEOID10 %in% macon_ids)
 summary(full_data_macon)
-writeOGR(obj=full_data_macon, dsn="tempdir", layer="full_data_macon", driver="ESRI Shapefile")
+# writeOGR(obj=full_data_macon, dsn="tempdir", layer="full_data_macon", driver="ESRI Shapefile")
 
 
 d <- tm_shape(full_data_macon) + 
@@ -135,7 +136,7 @@ savannah <- HOLC_score2 %>%
 savannah_ids <- savannah$GEOID10
 full_data_savannah <- subset(full_data, GEOID10 %in% savannah_ids)
 summary(full_data_savannah)
-writeOGR(obj=full_data_savannah, dsn="tempdir", layer="full_data_savannah", driver="ESRI Shapefile")
+# writeOGR(obj=full_data_savannah, dsn="tempdir", layer="full_data_savannah", driver="ESRI Shapefile")
 
 
 e <- tm_shape(full_data_savannah) + 
@@ -154,6 +155,220 @@ e
 
 
 tmap_arrange(a, b, c, d, e)
+
+
+
+
+### trying google maps
+
+library(ggmap)
+register_google(key = "AIzaSyDoqRrLTPjuz0V7----1qkkuLKF-FPDkYw")
+
+### Atlanta 
+qmap('Atlanta, GA', zoom = 11) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = full_data_atlanta,
+               colour = 'white', fill = 'black', alpha = .4, size = .3)
+
+# Add demographic data
+# The GEOID10 ID is a string - change it to a integer
+full_data_atlanta@data$GEOID10 <- as.numeric(full_data_atlanta@data$GEOID10)
+
+#GGPLOT 
+points_atlanta <- fortify(full_data_atlanta, region = 'GEOID10')
+
+# Plot the neighborhoods
+atlanta_gmap <- qmap("Atlanta, Georgia", zoom=11)
+atlanta_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_atlanta, fill=NA) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points_atlanta, color='black', fill=NA)
+
+# merge the shapefile data with the social housing data, using the neighborhood ID
+points_atlanta_2 <- merge(points_atlanta, full_data_atlanta, by.x='id', by.y='GEOID10', all.x=TRUE)
+
+points_atlanta_2$NQHRS10 <- sapply(points_atlanta_2$NQHRS10, as.factor)
+
+# Plot
+atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=NQHRS10), data=points_atlanta_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+### Augusta 
+qmap('Augusta, GA', zoom = 12) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = full_data_augusta,
+               colour = 'white', fill = 'black', alpha = .4, size = .3)
+
+# Add demographic data
+# The GEOID10 ID is a string - change it to a integer
+full_data_augusta@data$GEOID10 <- as.numeric(full_data_augusta@data$GEOID10)
+
+#GGPLOT 
+points_augusta <- fortify(full_data_augusta, region = 'GEOID10')
+
+# Plot the neighborhoods
+augusta_gmap <- qmap("Augusta, Georgia", zoom=12)
+augusta_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_augusta, fill=NA) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points_augusta, color='black', fill=NA)
+
+# merge the shapefile data with the social housing data, using the neighborhood ID
+points_augusta_2 <- merge(points_augusta, full_data_augusta, by.x='id', by.y='GEOID10', all.x=TRUE)
+
+points_augusta_2$NQHRS10 <- sapply(points_augusta_2$NQHRS10, as.factor)
+
+# Plot
+augusta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=NQHRS10), data=points_augusta_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+### Columbus 
+qmap('Columbus, GA', zoom = 12) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = full_data_columbus,
+               colour = 'white', fill = 'black', alpha = .4, size = .3)
+
+# Add demographic data
+# The GEOID10 ID is a string - change it to a integer
+full_data_columbus@data$GEOID10 <- as.numeric(full_data_columbus@data$GEOID10)
+
+#GGPLOT 
+points_columbus <- fortify(full_data_columbus, region = 'GEOID10')
+
+# Plot the neighborhoods
+columbus_gmap <- qmap("Columbus, Georgia", zoom=12)
+columbus_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_columbus, fill=NA) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points_columbus, color='black', fill=NA)
+
+# merge the shapefile data with the social housing data, using the neighborhood ID
+points_columbus_2 <- merge(points_columbus, full_data_columbus, by.x='id', by.y='GEOID10', all.x=TRUE)
+
+points_columbus_2$NQHRS10 <- sapply(points_columbus_2$NQHRS10, as.factor)
+
+# Plot
+columbus_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=NQHRS10), data=points_columbus_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+### Macon 
+qmap('Macon, GA', zoom = 12) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = full_data_macon,
+               colour = 'white', fill = 'black', alpha = .4, size = .3)
+
+# Add demographic data
+# The GEOID10 ID is a string - change it to a integer
+full_data_macon@data$GEOID10 <- as.numeric(full_data_macon@data$GEOID10)
+
+#GGPLOT 
+points_macon <- fortify(full_data_macon, region = 'GEOID10')
+
+# Plot the neighborhoods
+macon_gmap <- qmap("Macon, Georgia", zoom=12)
+macon_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_macon, fill=NA) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points_macon, color='black', fill=NA)
+
+# merge the shapefile data with the social housing data, using the neighborhood ID
+points_macon_2 <- merge(points_macon, full_data_macon, by.x='id', by.y='GEOID10', all.x=TRUE)
+
+points_macon_2$NQHRS10 <- sapply(points_macon_2$NQHRS10, as.factor)
+
+macon_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_macon_2, fill=NQHRS10) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points_macon_2, color='black', fill=NA)
+
+# Plot
+macon_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=NQHRS10), data=points_macon_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+### Savannah 
+qmap('Savannah, GA', zoom = 13) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = full_data_savannah,
+               colour = 'white', fill = 'black', alpha = .4, size = .3)
+
+# Add demographic data
+# The GEOID10 ID is a string - change it to a integer
+full_data_savannah@data$GEOID10 <- as.numeric(full_data_savannah@data$GEOID10)
+
+#GGPLOT 
+points_savannah <- fortify(full_data_savannah, region = 'GEOID10')
+
+# Plot the neighborhoods
+savannah_gmap <- qmap("Savannah, Georgia", zoom=13)
+savannah_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_savannah, fill=NA) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points, color='black', fill=NA)
+
+# merge the shapefile data with the social housing data, using the neighborhood ID
+points_savannah_2 <- merge(points_savannah, full_data_savannah, by.x='id', by.y='GEOID10', all.x=TRUE)
+
+points_savannah_2$NQHRS10 <- sapply(points_savannah_2$NQHRS10, as.factor)
+
+# Plot
+savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=NQHRS10), data=points_savannah_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+
+
 
 
 
@@ -324,11 +539,6 @@ e <- tm_shape(HOLC_full_savannah) +
 
 tmap_arrange(a, b, c, d, e)
 
-
-
-
-
-
 ## Exporting datasets
 
 
@@ -394,6 +604,19 @@ savannah_ids <- savannah$GEOID20
 full_data_savannah <- subset(full_data, GEOID20 %in% savannah_ids)
 summary(full_data_savannah)
 writeOGR(obj=full_data_savannah, dsn="tempdir", layer="full_data_savannah", driver="ESRI Shapefile")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
