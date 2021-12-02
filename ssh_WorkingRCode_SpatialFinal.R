@@ -9,6 +9,7 @@ library(sp)
 library(readxl)
 library(rgdal)
 library(readr)
+library(ggplot2)
 
 # Data files
 
@@ -69,9 +70,176 @@ full_data_macon <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_maco
 full_data_savannah <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_savannah") # only have census tracts with HOLC data
 full_data_columbus <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_columbus") # only have census tracts with HOLC data
 
+#### 15 panel map - local quantiles ####
+
+# Diesel PM
+
+dpm_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nAtlanta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
 
 
-#### 15 panel map ####
+dpm_aug <- tm_shape(full_data_augusta) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nAugusta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+dpm_mac <- tm_shape(full_data_macon) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nMacon',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+dpm_sav <- tm_shape(full_data_savannah) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nSavannah',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+dpm_col <- tm_shape(full_data_columbus) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu',
+          title = 'Diesel PM') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+# RESP
+
+res_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nAtlanta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+res_aug <- tm_shape(full_data_augusta) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nAugusta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+res_mac <- tm_shape(full_data_macon) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nMacon',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+res_sav <- tm_shape(full_data_savannah) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nSavannah',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+res_col <- tm_shape(full_data_columbus) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+# Cancer
+
+can_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nAtlanta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+can_aug <- tm_shape(full_data_augusta) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nAugusta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+can_mac <- tm_shape(full_data_macon) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nMacon',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+can_sav <- tm_shape(full_data_savannah) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nSavannah',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+can_col <- tm_shape(full_data_columbus) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu',
+          title = 'Cancer Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5)
+
+tmap_arrange(dpm_atl, dpm_aug, dpm_sav, dpm_mac, dpm_col,
+             res_atl, res_aug, res_sav, res_mac, res_col,
+             can_atl, can_aug, can_sav, can_mac, can_col,
+             nrow = 3,
+             ncol = 5)
+
+
+#### 15 panel map - full data quantiles ####
 
 # Diesel PM
 
@@ -250,11 +418,66 @@ tmap_arrange(dpm_atl, dpm_aug, dpm_sav, dpm_mac, dpm_col,
              nrow = 3,
              ncol = 5)
 
+#### density plot graph ####
 
+hist <- as.data.frame(full_data_georgia) %>% 
+  select(c(CBSA, CANCER, DSLPM, RESP)) 
 
+hist$cities <- factor(hist$CBSA,
+                      levels = c(12060, 42340, 17980, 31420, 12260), 
+                      labels = c('Atlanta', 'Savannah', 'Columbus', 'Macon', 'Augusta'))
+  
+
+dslpm <- ggplot(hist, aes(x = DSLPM, fill = cities)) +
+  geom_density(alpha = 0.4) +
+  ggtitle('NATA Diesel PM Density per City in Georgia') +
+  xlab('Diesel PM') +
+  ylab('Density') +
+  labs(fill = 'HOLC Regions') +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) 
+
+cancer <- ggplot(hist, aes(x = CANCER, fill = cities)) +
+  geom_density(alpha = 0.4) +
+  ggtitle('Cancer Risk per City in Georgia') +
+  xlab('Cancer Risk') +
+  ylab('Density') +
+  labs(fill = 'HOLC Regions') +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) 
+
+resp <- ggplot(hist, aes(x = RESP, fill = cities)) +
+  geom_density(alpha = 0.4) +
+  ggtitle('Respiratory Hazard per City in Georgia') +
+  xlab('Respiratory Hazard') +
+  ylab('Density') +
+  labs(fill = 'HOLC Regions') +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) 
+  
+
+resp
+cancer
+dslpm
 
 
 #### Example Code ####
+
+# Density plots 
+
+# Basic density
+p <- ggplot(df, aes(x=weight)) + 
+  geom_density()
+p
+# Add mean line
+p+ geom_vline(aes(xintercept=mean(weight)),
+              color="blue", linetype="dashed", size=1)
 
 # Reading and writing a .shp file 
 x <- readOGR(dsn=path.expand("Data/tempdir"),layer="HOLC_full")

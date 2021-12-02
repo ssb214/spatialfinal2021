@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+=======
 
 .Rproj.user/shared/notebooks/paths
 .Rproj.user/shared/notebooks/patch-chunk-names
@@ -26,3 +32,4 @@
 .Rproj.user/F7EC4EFE/pcs/files-pane.pper
 .Rhistory
 .Rproj.user
+>>>>>>> d7f5ed3acea949908be1e69813b9672cc6cb4412
