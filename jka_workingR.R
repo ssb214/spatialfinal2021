@@ -33,23 +33,31 @@ full_data <- st_transform(full_data, 5070) # project data to Albers Equal Area
 HOLC_score <- read_excel("Historic Redlining Score 2010.xlsx")
 
 HOLC_score2 <- HOLC_score %>% 
-  filter(substr(GEOID10,1,2) == "13") # restricting to only GA
-
-MyPalette <- c("#A8FF33", "#81F0FF", "#FAFF93", "#FF9693")
-MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
+  filter(substr(GEOID10,1,2) == "13")  # restricting to only GA
 
 # All GA
 ga_ids <- HOLC_score2$GEOID10
 full_data_georgia <- subset(full_data, GEOID10 %in% ga_ids)
+
+full_data_georgia@data <- full_data_georgia@data %>% 
+  mutate(HRS10_bins = case_when(HRS10 >= 1 & HRS10 < 1.5 ~ "1", # new categories
+                                HRS10 >= 1.5 & HRS10 < 2.5 ~ "2",
+                                HRS10 >= 2.5 & HRS10 < 3.5 ~ "3",
+                                HRS10 >= 3.5 & HRS10 <= 4 ~ "4"))
+  
 summary(full_data_georgia)
 # writeOGR(obj=full_data_georgia, dsn="tempdir", layer="full_data_georgia", driver="ESRI Shapefile")
+
+# Map Palette
+MyPalette <- c("#A8FF33", "#81F0FF", "#FAFF93", "#FF9693")
+MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
 
 # Atlanta only
 atlanta <- HOLC_score2 %>% 
   filter(CBSA=="12060")
 atlanta_ids <- atlanta$GEOID10
-full_data_atlanta <- subset(full_data, GEOID10 %in% atlanta_ids)
-summary(full_data_atlanta)
+full_data_atlanta <- subset(full_data_georgia, GEOID10 %in% atlanta_ids)
+# summary(full_data_atlanta)
 # writeOGR(obj=full_data_atlanta, dsn="tempdir", layer="full_data_atlanta", driver="ESRI Shapefile")
 
 a <- tm_shape(full_data_atlanta) + 
@@ -65,13 +73,12 @@ a <- tm_shape(full_data_atlanta) +
 
 a
 
-
 # Augusta only
 augusta <- HOLC_score2 %>% 
   filter(CBSA=="12260")
 augusta_ids <- augusta$GEOID10
-full_data_augusta<- subset(full_data, GEOID10 %in% augusta_ids)
-summary(full_data_augusta)
+full_data_augusta<- subset(full_data_georgia, GEOID10 %in% augusta_ids)
+# summary(full_data_augusta)
 # writeOGR(obj=full_data_augusta, dsn="tempdir", layer="full_data_augusta", driver="ESRI Shapefile")
 
 b <- tm_shape(full_data_augusta) + 
@@ -91,8 +98,8 @@ b
 columbus <- HOLC_score2 %>% 
   filter(CBSA=="17980")
 columbus_ids <- columbus$GEOID10
-full_data_columbus <- subset(full_data, GEOID10 %in% columbus_ids)
-summary(full_data_columbus)
+full_data_columbus <- subset(full_data_georgia, GEOID10 %in% columbus_ids)
+# summary(full_data_columbus)
 # writeOGR(obj=full_data_columbus, dsn="tempdir", layer="full_data_columbus", driver="ESRI Shapefile")
 
 c <- tm_shape(full_data_columbus) + 
@@ -112,10 +119,9 @@ c
 macon <- HOLC_score2 %>% 
   filter(CBSA=="31420")
 macon_ids <- macon$GEOID10
-full_data_macon <- subset(full_data, GEOID10 %in% macon_ids)
-summary(full_data_macon)
+full_data_macon <- subset(full_data_georgia, GEOID10 %in% macon_ids)
+# summary(full_data_macon)
 # writeOGR(obj=full_data_macon, dsn="tempdir", layer="full_data_macon", driver="ESRI Shapefile")
-
 
 d <- tm_shape(full_data_macon) + 
   tm_fill('HRS10',
@@ -134,13 +140,12 @@ d
 savannah <- HOLC_score2 %>% 
   filter(CBSA=="42340")
 savannah_ids <- savannah$GEOID10
-full_data_savannah <- subset(full_data, GEOID10 %in% savannah_ids)
-summary(full_data_savannah)
+full_data_savannah <- subset(full_data_georgia, GEOID10 %in% savannah_ids)
+# summary(full_data_savannah)
 # writeOGR(obj=full_data_savannah, dsn="tempdir", layer="full_data_savannah", driver="ESRI Shapefile")
 
-
 e <- tm_shape(full_data_savannah) + 
-  tm_fill('HRS10',
+  tm_fill('MQHRS10',
           n = 4,
           style = 'quantile',
           palette = MyPalette, 
@@ -150,14 +155,9 @@ e <- tm_shape(full_data_savannah) +
   tm_layout(legend.position = c('LEFT', 'BOTTOM'), legend.title.size = 1, legend.text.size = 0.8,
             main.title = "Savannah", main.title.size = 1) 
 
-
 e
 
-
 tmap_arrange(a, b, c, d, e)
-
-
-
 
 ### trying google maps
 
@@ -184,10 +184,10 @@ atlanta_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_atlanta, 
 # merge the shapefile data with the social housing data, using the neighborhood ID
 points_atlanta_2 <- merge(points_atlanta, full_data_atlanta, by.x='id', by.y='GEOID10', all.x=TRUE)
 
-points_atlanta_2$MQHRS10 <- sapply(points_atlanta_2$MQHRS10, as.factor)
+points_atlanta_2$HRS10_bins <- sapply(points_atlanta_2$HRS10_bins, as.factor)
 
 # Plot
-atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=points_atlanta_2, color='black') + 
+atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_atlanta_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
                                "2" = "Medium (Q2)", 
@@ -224,10 +224,10 @@ augusta_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_augusta, 
 # merge the shapefile data with the social housing data, using the neighborhood ID
 points_augusta_2 <- merge(points_augusta, full_data_augusta, by.x='id', by.y='GEOID10', all.x=TRUE)
 
-points_augusta_2$MQHRS10 <- sapply(points_augusta_2$MQHRS10, as.factor)
+points_augusta_2$HRS10_bins <- sapply(points_augusta_2$HRS10_bins, as.factor)
 
 # Plot
-augusta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=points_augusta_2, color='black') + 
+augusta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_augusta_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
                                "2" = "Medium (Q2)", 
@@ -264,10 +264,10 @@ columbus_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_columbus
 # merge the shapefile data with the social housing data, using the neighborhood ID
 points_columbus_2 <- merge(points_columbus, full_data_columbus, by.x='id', by.y='GEOID10', all.x=TRUE)
 
-points_columbus_2$MQHRS10 <- sapply(points_columbus_2$MQHRS10, as.factor)
+points_columbus_2$HRS10_bins <- sapply(points_columbus_2$HRS10_bins, as.factor)
 
 # Plot
-columbus_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=points_columbus_2, color='black') + 
+columbus_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_columbus_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
                                "2" = "Medium (Q2)", 
@@ -304,13 +304,10 @@ macon_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_macon, fill
 # merge the shapefile data with the social housing data, using the neighborhood ID
 points_macon_2 <- merge(points_macon, full_data_macon, by.x='id', by.y='GEOID10', all.x=TRUE)
 
-points_macon_2$MQHRS10 <- sapply(points_macon_2$MQHRS10, as.factor)
-
-macon_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_macon_2, fill=NQHRS10) +
-  geom_polygon(aes(x=long,y=lat, group=group), data=points_macon_2, color='black', fill=NA)
+points_macon_2$HRS10_bins <- sapply(points_macon_2$HRS10_bins, as.factor)
 
 # Plot
-macon_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=points_macon_2, color='black') + 
+macon_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_macon_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
                                "2" = "Medium (Q2)", 
@@ -347,10 +344,10 @@ savannah_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_savannah
 # merge the shapefile data with the social housing data, using the neighborhood ID
 points_savannah_2 <- merge(points_savannah, full_data_savannah, by.x='id', by.y='GEOID10', all.x=TRUE)
 
-points_savannah_2$MQHRS10 <- sapply(points_savannah_2$MQHRS10, as.factor)
+points_savannah_2$HRS10_bins <- sapply(points_savannah_2$HRS10_bins, as.factor)
 
 # Plot
-savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=points_savannah_2, color='black') + 
+savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_savannah_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
                                "2" = "Medium (Q2)", 
@@ -371,6 +368,23 @@ savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=MQHRS10), data=
 
 
 
+
+### Mean, SD for HRS10
+
+mean(full_data_atlanta$HRS10)
+sd(full_data_atlanta$HRS10)
+
+mean(full_data_augusta$HRS10)
+sd(full_data_augusta$HRS10)
+
+mean(full_data_columbus$HRS10)
+sd(full_data_columbus$HRS10)
+
+mean(full_data_macon$HRS10)
+sd(full_data_macon$HRS10)
+
+mean(full_data_savannah$HRS10)
+sd(full_data_savannah$HRS10)
 
 
 
