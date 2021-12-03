@@ -77,43 +77,59 @@ full_data_columbus <- readOGR(dsn=path.expand("Data/tempdir"),layer="full_data_c
 dpm_atl <- tm_shape(full_data_atlanta) +
   tm_fill('DSLPM',
           style = 'quantile',
-          palette = 'BuPu') +
+          palette = 'BuPu',
+          title = 'Diesel PM') +
   tm_borders() +
   tm_layout(main.title = 'Diesel PM: \nAtlanta',
             main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+dpm_atl
 
 
 dpm_aug <- tm_shape(full_data_augusta) +
   tm_fill('DSLPM',
           style = 'quantile',
-          palette = 'BuPu') +
+          palette = 'BuPu',
+          title = 'Diesel PM') +
   tm_borders() +
-  tm_layout(main.title = 'Diesel PM: \nAugusta',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Diesel PM: \nAugusta',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+dpm_aug
 
 dpm_mac <- tm_shape(full_data_macon) +
   tm_fill('DSLPM',
           style = 'quantile',
-          palette = 'BuPu') +
+          palette = 'BuPu',
+          title = 'Diesel PM') +
   tm_borders() +
-  tm_layout(main.title = 'Diesel PM: \nMacon',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Diesel PM: \nMacon',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+dpm_mac
 
 dpm_sav <- tm_shape(full_data_savannah) +
   tm_fill('DSLPM',
           style = 'quantile',
-          palette = 'BuPu') +
+          palette = 'BuPu',
+          title = 'Diesel PM') +
   tm_borders() +
-  tm_layout(main.title = 'Diesel PM: \nSavannah',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Diesel PM: \nSavannah',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+dpm_sav
 
 dpm_col <- tm_shape(full_data_columbus) +
   tm_fill('DSLPM',
@@ -121,52 +137,71 @@ dpm_col <- tm_shape(full_data_columbus) +
           palette = 'BuPu',
           title = 'Diesel PM') +
   tm_borders() +
-  tm_layout(main.title = 'Diesel PM: \nColumbus',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Diesel PM: \nColumbus',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+dpm_col
 
 # RESP
 
 res_atl <- tm_shape(full_data_atlanta) +
   tm_fill('RESP',
           style = 'quantile',
-          palette = 'RdPu') +
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
   tm_borders() +
-  tm_layout(main.title = 'Respiratory Hazard: \nAtlanta',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Respiratory Hazard: \nAtlanta',
+           # main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+res_atl
 
 res_aug <- tm_shape(full_data_augusta) +
   tm_fill('RESP',
           style = 'quantile',
-          palette = 'RdPu') +
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
   tm_borders() +
-  tm_layout(main.title = 'Respiratory Hazard: \nAugusta',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Respiratory Hazard: \nAugusta',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+res_aug
 
 res_mac <- tm_shape(full_data_macon) +
   tm_fill('RESP',
           style = 'quantile',
-          palette = 'RdPu') +
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
   tm_borders() +
-  tm_layout(main.title = 'Respiratory Hazard: \nMacon',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Respiratory Hazard: \nMacon',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+res_mac
 
 res_sav <- tm_shape(full_data_savannah) +
   tm_fill('RESP',
           style = 'quantile',
-          palette = 'RdPu') +
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
   tm_borders() +
-  tm_layout(main.title = 'Respiratory Hazard: \nSavannah',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Respiratory Hazard: \nSavannah',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+res_sav
 
 res_col <- tm_shape(full_data_columbus) +
   tm_fill('RESP',
@@ -174,69 +209,91 @@ res_col <- tm_shape(full_data_columbus) +
           palette = 'RdPu',
           title = 'Repiratory Hazard') +
   tm_borders() +
-  tm_layout(main.title = 'Respiratory Hazard: \nColumbus',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Respiratory Hazard: \nColumbus',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+res_col
 
 # Cancer
 
 can_atl <- tm_shape(full_data_atlanta) +
   tm_fill('CANCER',
           style = 'quantile',
-          palette = 'PuBu') +
+          palette = 'PuBu',
+          title = 'Cancer Risk') +
   tm_borders() +
-  tm_layout(main.title = 'Cancer Hazard: \nAtlanta',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Cancer Hazard: \nAtlanta',
+           # main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+can_atl
 
 can_aug <- tm_shape(full_data_augusta) +
   tm_fill('CANCER',
           style = 'quantile',
-          palette = 'PuBu') +
+          palette = 'PuBu',
+          title = 'Cancer Risk') +
   tm_borders() +
-  tm_layout(main.title = 'Cancer Hazard: \nAugusta',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Cancer Hazard: \nAugusta',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+can_aug
 
 can_mac <- tm_shape(full_data_macon) +
   tm_fill('CANCER',
           style = 'quantile',
-          palette = 'PuBu') +
+          palette = 'PuBu',
+          title = 'Cancer Risk') +
   tm_borders() +
-  tm_layout(main.title = 'Cancer Hazard: \nMacon',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Cancer Hazard: \nMacon',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+can_mac
 
 can_sav <- tm_shape(full_data_savannah) +
   tm_fill('CANCER',
           style = 'quantile',
-          palette = 'PuBu') +
+          palette = 'PuBu',
+          title = 'Cancer Risk') +
   tm_borders() +
-  tm_layout(main.title = 'Cancer Hazard: \nSavannah',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Cancer Hazard: \nSavannah',
+           # main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+
+can_sav
 
 can_col <- tm_shape(full_data_columbus) +
   tm_fill('CANCER',
           style = 'quantile',
           palette = 'PuBu',
-          title = 'Cancer Hazard') +
+          title = 'Cancer Risk') +
   tm_borders() +
-  tm_layout(main.title = 'Cancer Hazard: \nColumbus',
-            main.title.size = 0.9,
+  tm_layout(#main.title = 'Cancer Hazard: \nColumbus',
+            #main.title.size = 0.9,
             legend.outside = T,
-            legend.outside.size = .5)
+            legend.outside.size = .5,
+            frame = F)
+can_col
 
 tmap_arrange(dpm_atl, dpm_aug, dpm_sav, dpm_mac, dpm_col,
              res_atl, res_aug, res_sav, res_mac, res_col,
              can_atl, can_aug, can_sav, can_mac, can_col,
              nrow = 3,
              ncol = 5)
+
+
 
 
 #### 15 panel map - full data quantiles ####
