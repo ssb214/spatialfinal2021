@@ -43,6 +43,9 @@ library(sp) # spatial methods package
 library(readxl) # import excel files 
 library(rgdal) # spatial methods package
 library(readr) # data file loading package
+library(sf) # spatial methods package
+
+setwd("C:/Users/SSBUCKE/OneDrive - Emory University/Spatial Project/spatialfinal2021")
 
 # Data files
 
@@ -102,10 +105,6 @@ full_data <- sp::merge(ej_ga2, HOLC_score2,
                        duplicateGeoms = T,
                        na.strings = 'Missing')
 
-summary(full_data)
-
-# Projecting data to Albers Equal Area
-full_data <- st_transform(full_data, 5070)
 
 # Subsetting data into 
 ## All GA (only redlined areas)
@@ -121,7 +120,7 @@ MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
 # All GA
 ga_ids <- HOLC_score2$GEOID10
 full_data_georgia <- subset(full_data, GEOID10 %in% ga_ids)
-summary(full_data_georgia)
+
 # writeOGR(obj=full_data_georgia, dsn="tempdir", layer="full_data_georgia", driver="ESRI Shapefile")
 
 # Atlanta only
@@ -129,7 +128,7 @@ atlanta <- HOLC_score2 %>%
   filter(CBSA=="12060")
 atlanta_ids <- atlanta$GEOID10
 full_data_atlanta <- subset(full_data, GEOID10 %in% atlanta_ids)
-summary(full_data_atlanta)
+
 # writeOGR(obj=full_data_atlanta, dsn="tempdir", layer="full_data_atlanta", driver="ESRI Shapefile")
 
 # Augusta only
@@ -137,7 +136,7 @@ augusta <- HOLC_score2 %>%
   filter(CBSA=="12260")
 augusta_ids <- augusta$GEOID10
 full_data_augusta<- subset(full_data, GEOID10 %in% augusta_ids)
-summary(full_data_augusta)
+
 # writeOGR(obj=full_data_augusta, dsn="tempdir", layer="full_data_augusta", driver="ESRI Shapefile")
 
 # Columbus only
@@ -145,7 +144,7 @@ columbus <- HOLC_score2 %>%
   filter(CBSA=="17980")
 columbus_ids <- columbus$GEOID10
 full_data_columbus <- subset(full_data, GEOID10 %in% columbus_ids)
-summary(full_data_columbus)
+
 # writeOGR(obj=full_data_columbus, dsn="tempdir", layer="full_data_columbus", driver="ESRI Shapefile")
 
 # Macon only
@@ -153,7 +152,7 @@ macon <- HOLC_score2 %>%
   filter(CBSA=="31420")
 macon_ids <- macon$GEOID10
 full_data_macon <- subset(full_data, GEOID10 %in% macon_ids)
-summary(full_data_macon)
+
 # writeOGR(obj=full_data_macon, dsn="tempdir", layer="full_data_macon", driver="ESRI Shapefile")
 
 # Savannah only
@@ -161,7 +160,7 @@ savannah <- HOLC_score2 %>%
   filter(CBSA=="42340")
 savannah_ids <- savannah$GEOID10
 full_data_savannah <- subset(full_data, GEOID10 %in% savannah_ids)
-summary(full_data_savannah)
+
 # writeOGR(obj=full_data_savannah, dsn="tempdir", layer="full_data_savannah", driver="ESRI Shapefile")
 
 ```
@@ -179,7 +178,7 @@ Note: for the poster, individual images where exported in order to make a "clean
 
 Since we are treating each city as spatial islands, local quantiles were used.  
 
-```{r 15 panel map}
+```{r 15 panel map, warning=FALSE, message=FALSE}
 # Diesel PM
 
 dpm_atl <- tm_shape(full_data_atlanta) +
@@ -194,8 +193,6 @@ dpm_atl <- tm_shape(full_data_atlanta) +
             legend.outside.size = .5,
             frame = F)
 
-dpm_atl
-
 
 dpm_aug <- tm_shape(full_data_augusta) +
   tm_fill('DSLPM',
@@ -209,7 +206,6 @@ dpm_aug <- tm_shape(full_data_augusta) +
             legend.outside.size = .5,
             frame = F)
 
-dpm_aug
 
 dpm_mac <- tm_shape(full_data_macon) +
   tm_fill('DSLPM',
@@ -223,7 +219,6 @@ dpm_mac <- tm_shape(full_data_macon) +
             legend.outside.size = .5,
             frame = F)
 
-dpm_mac
 
 dpm_sav <- tm_shape(full_data_savannah) +
   tm_fill('DSLPM',
@@ -237,7 +232,6 @@ dpm_sav <- tm_shape(full_data_savannah) +
             legend.outside.size = .5,
             frame = F)
 
-dpm_sav
 
 dpm_col <- tm_shape(full_data_columbus) +
   tm_fill('DSLPM',
@@ -251,7 +245,6 @@ dpm_col <- tm_shape(full_data_columbus) +
             legend.outside.size = .5,
             frame = F)
 
-dpm_col
 
 # RESP
 
@@ -267,7 +260,6 @@ res_atl <- tm_shape(full_data_atlanta) +
             legend.outside.size = .5,
             frame = F)
 
-res_atl
 
 res_aug <- tm_shape(full_data_augusta) +
   tm_fill('RESP',
@@ -281,7 +273,6 @@ res_aug <- tm_shape(full_data_augusta) +
             legend.outside.size = .5,
             frame = F)
 
-res_aug
 
 res_mac <- tm_shape(full_data_macon) +
   tm_fill('RESP',
@@ -295,7 +286,6 @@ res_mac <- tm_shape(full_data_macon) +
             legend.outside.size = .5,
             frame = F)
 
-res_mac
 
 res_sav <- tm_shape(full_data_savannah) +
   tm_fill('RESP',
@@ -309,7 +299,6 @@ res_sav <- tm_shape(full_data_savannah) +
             legend.outside.size = .5,
             frame = F)
 
-res_sav
 
 res_col <- tm_shape(full_data_columbus) +
   tm_fill('RESP',
@@ -322,7 +311,7 @@ res_col <- tm_shape(full_data_columbus) +
             legend.outside = T,
             legend.outside.size = .5,
             frame = F)
-res_col
+
 
 # Cancer
 
@@ -338,7 +327,6 @@ can_atl <- tm_shape(full_data_atlanta) +
             legend.outside.size = .5,
             frame = F)
 
-can_atl
 
 can_aug <- tm_shape(full_data_augusta) +
   tm_fill('CANCER',
@@ -352,7 +340,6 @@ can_aug <- tm_shape(full_data_augusta) +
             legend.outside.size = .5,
             frame = F)
 
-can_aug
 
 can_mac <- tm_shape(full_data_macon) +
   tm_fill('CANCER',
@@ -366,7 +353,6 @@ can_mac <- tm_shape(full_data_macon) +
             legend.outside.size = .5,
             frame = F)
 
-can_mac
 
 can_sav <- tm_shape(full_data_savannah) +
   tm_fill('CANCER',
@@ -380,7 +366,6 @@ can_sav <- tm_shape(full_data_savannah) +
             legend.outside.size = .5,
             frame = F)
 
-can_sav
 
 can_col <- tm_shape(full_data_columbus) +
   tm_fill('CANCER',
@@ -393,7 +378,7 @@ can_col <- tm_shape(full_data_columbus) +
             legend.outside = T,
             legend.outside.size = .5,
             frame = F)
-can_col
+
 
 tmap_arrange(dpm_atl, dpm_aug, dpm_sav, dpm_mac, dpm_col,
              res_atl, res_aug, res_sav, res_mac, res_col,
@@ -406,7 +391,7 @@ tmap_arrange(dpm_atl, dpm_aug, dpm_sav, dpm_mac, dpm_col,
 
 In order to be transparent about the data distributions in each city, we created density plots of each health hazard by HOLC region in GA. 
 
-```{r Density plots}
+```{r Density plots, message=FALSE, warning=FALSE}
 # Creating a dataset that removes the spatial aspect to run the plots 
 
 hist <- as.data.frame(full_data_georgia) %>% 
@@ -462,7 +447,7 @@ dslpm
 
 # Moran's I 
 
-```{r Moran's I}
+```{r Morans I}
 #### LEAH POST HERE ####
 ```
 
