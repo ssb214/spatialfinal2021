@@ -7,15 +7,42 @@ output:
     toc: true
 ---
 
+# Background 
+
+A prime example of structural racism is the 1930s the practice of redlining by the Home Owners Loan Corporation (HOLC).  Although redlining is now illegal, the structure remains and impacts health outcomes today.
+
+Aim: to understand the impact of redlining in Georgia’s HOLC regions on health hazards (diesel particulate matter [PM] levels, respiratory hazard index, and cancer risk due to air toxics) 
+
+## Outcomes of interest (by census tract):
+
+- National Scale Air Toxics Assessment Air Toxics Cancer Risk (CANCER)
+- National Scale Air Toxics Assessment Respiratory Hazard Index (RESP)
+- National Scale Air Toxics Assessment Diesel PM (DPM) (DSLPM)
+
+Hazard index: The sum of the hazard quotients for toxics that affect the same target organ/target system.  An HI <=1 indicates noncancer effect not likely to occur 
+
+Cancer risk: the results of cancer dose-response assessments are converted into a unit risk estimate.  This is multiplied by the estimated inhalation exposure concentration over a lifetime (70 years) to estimate an individuals lifetime cancer risk.   
+
+##Exposure of interest (aggregated to census tract):
+- Redlining 
+
+Data from University of Michigan Social Science Institute, by Helen Meier
+
+# Setting up 
+
+NOTE: EJScreen data
+
+For ease of importing to GitHub (file size issues), we limited the data to only areas within GA before loading the dataset to the project 
+
 ```{r setup, message=FALSE}
 # Packages 
-library(tmap)
-library(tidyverse)
-library(dplyr)
-library(sp)
-library(readxl)
-library(rgdal)
-library(readr)
+library(tmap) # Mapping spatial file 
+library(tidyverse) # data wrangling tools 
+library(dplyr) # data wrangling tools 
+library(sp) # spatial methods package
+library(readxl) # import excel files 
+library(rgdal) # spatial methods package
+library(readr) # data file loading package
 
 # Data files
 
@@ -37,6 +64,16 @@ ga_tracts_10 <- readOGR(dsn=path.expand("Data/tl_2020_13_all"),layer="tl_2020_13
 ```
 
 # Editing data 
+
+Data convention HOLC_map_cityname will be used to create datasets with extra census tracts for mapping purposes. 
+
+HOLC_full: Census tract + HOLC data, all Georgia census tracts
+HOLC_full_georgia: Census tract + HOLC data, all Georgia census tracts, only GA census tracts with HOLC data
+HOLC_full_atlanta: Census tract + HOLC data, only census tracts in Atlanta with HOLC data
+HOLC_full_augusta: Census tract + HOLC data, only census tracts in Augusta with HOLC data
+HOLC_full_columbus: Census tract + HOLC data, only census tracts in Columbus with HOLC data
+HOLC_full_macon: Census tract + HOLC data, only census tracts in Macon with HOLC data
+HOLC_full_savannah: Census tract + HOLC data, only census tracts in Savannah with HOLC data
 
 ```{r data edits}
 # Cleaning HOLC score data
@@ -128,4 +165,318 @@ summary(full_data_savannah)
 # writeOGR(obj=full_data_savannah, dsn="tempdir", layer="full_data_savannah", driver="ESRI Shapefile")
 
 ```
+
+# Creating redlining maps 
+
+```{r redline maps}
+###### JASMINE POST HERE #####
+```
+
+
+# Creating the 15 panel map 
+
+Note: for the poster, individual images where exported in order to make a "cleaner" figure.  For this RMarkdown, we are producing the 15 panel map using tmap_arrange, so the two figures might look different. 
+
+Since we are treating each city as spatial islands, local quantiles were used.  
+
+```{r 15 panel map}
+# Diesel PM
+
+dpm_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu',
+          title = 'Diesel PM') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nAtlanta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+dpm_atl
+
+
+dpm_aug <- tm_shape(full_data_augusta) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu',
+          title = 'Diesel PM') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nAugusta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+dpm_aug
+
+dpm_mac <- tm_shape(full_data_macon) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu',
+          title = 'Diesel PM') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nMacon',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+dpm_mac
+
+dpm_sav <- tm_shape(full_data_savannah) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu',
+          title = 'Diesel PM') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nSavannah',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+dpm_sav
+
+dpm_col <- tm_shape(full_data_columbus) +
+  tm_fill('DSLPM',
+          style = 'quantile',
+          palette = 'BuPu',
+          title = 'Diesel PM') +
+  tm_borders() +
+  tm_layout(main.title = 'Diesel PM: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+dpm_col
+
+# RESP
+
+res_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nAtlanta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+res_atl
+
+res_aug <- tm_shape(full_data_augusta) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nAugusta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+res_aug
+
+res_mac <- tm_shape(full_data_macon) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nMacon',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+res_mac
+
+res_sav <- tm_shape(full_data_savannah) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nSavannah',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+res_sav
+
+res_col <- tm_shape(full_data_columbus) +
+  tm_fill('RESP',
+          style = 'quantile',
+          palette = 'RdPu',
+          title = 'Repiratory Hazard') +
+  tm_borders() +
+  tm_layout(main.title = 'Respiratory Hazard: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+res_col
+
+# Cancer
+
+can_atl <- tm_shape(full_data_atlanta) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu',
+          title = 'Cancer Risk') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nAtlanta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+can_atl
+
+can_aug <- tm_shape(full_data_augusta) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu',
+          title = 'Cancer Risk') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nAugusta',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+can_aug
+
+can_mac <- tm_shape(full_data_macon) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu',
+          title = 'Cancer Risk') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nMacon',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+can_mac
+
+can_sav <- tm_shape(full_data_savannah) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu',
+          title = 'Cancer Risk') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nSavannah',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+
+can_sav
+
+can_col <- tm_shape(full_data_columbus) +
+  tm_fill('CANCER',
+          style = 'quantile',
+          palette = 'PuBu',
+          title = 'Cancer Risk') +
+  tm_borders() +
+  tm_layout(main.title = 'Cancer Hazard: \nColumbus',
+            main.title.size = 0.9,
+            legend.outside = T,
+            legend.outside.size = .5,
+            frame = F)
+can_col
+
+tmap_arrange(dpm_atl, dpm_aug, dpm_sav, dpm_mac, dpm_col,
+             res_atl, res_aug, res_sav, res_mac, res_col,
+             can_atl, can_aug, can_sav, can_mac, can_col,
+             nrow = 3,
+             ncol = 5)
+```
+
+# Desity plots 
+
+In order to be transparent about the data distributions in each city, we created density plots of each health hazard by HOLC region in GA. 
+
+```{r Density plots}
+# Creating a dataset that removes the spatial aspect to run the plots 
+
+hist <- as.data.frame(full_data_georgia) %>% 
+  select(c(CBSA, CANCER, DSLPM, RESP)) 
+
+# Creating a label for each of the HOLC regions in GA
+hist$cities <- factor(hist$CBSA,
+                      levels = c(12060, 42340, 17980, 31420, 12260), 
+                      labels = c('Atlanta', 'Savannah', 'Columbus', 'Macon', 'Augusta'))
+  
+
+# Creating desity plots 
+
+dslpm <- ggplot(hist, aes(x = DSLPM, fill = cities)) +
+  geom_density(alpha = 0.4) +
+  ggtitle('NATA Diesel PM Density per City in Georgia') +
+  xlab('Diesel PM') +
+  ylab('Density') +
+  labs(fill = 'HOLC Regions') +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) 
+
+cancer <- ggplot(hist, aes(x = CANCER, fill = cities)) +
+  geom_density(alpha = 0.4) +
+  ggtitle('Cancer Risk per City in Georgia') +
+  xlab('Cancer Risk') +
+  ylab('Density') +
+  labs(fill = 'HOLC Regions') +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) 
+
+resp <- ggplot(hist, aes(x = RESP, fill = cities)) +
+  geom_density(alpha = 0.4) +
+  ggtitle('Respiratory Hazard per City in Georgia') +
+  xlab('Respiratory Hazard') +
+  ylab('Density') +
+  labs(fill = 'HOLC Regions') +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) 
+  
+# Printing Density plots 
+
+resp
+cancer
+dslpm
+```
+
+# Moran's I 
+
+```{r Moran's I}
+#### LEAH POST HERE ####
+```
+
+## Results 
+
+Spatial dependence (Global Moran’s I) was significant in all scenarios
+
+# Spatial Durbin Model 
+
+```{r SDM}
+#### LEAH POST HERE ####
+```
+
+## Results 
+
+Higher redlining was associated with an increase in the total impact of all health hazards in all HOLC regions, with the exception of diesel PM in Columbus and Augusta
 

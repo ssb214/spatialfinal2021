@@ -41,7 +41,7 @@ HOLC_full_columbus: Census tract + HOLC data, only census tracts in Columbus wit
 HOLC_full_macon: Census tract + HOLC data, only census tracts in Macon with HOLC data
 HOLC_full_savannah: Census tract + HOLC data, only census tracts in Savannah with HOLC data
 
-Data convention HOLC_map_cityname will be used to create datasets with extra census tracts for mapping purposes. Need to still figure out how we want to present those maps.
+Data convention HOLC_map_cityname will be used to create datasets with extra census tracts for mapping purposes. 
 
 # Analysis Plan
 
