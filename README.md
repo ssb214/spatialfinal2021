@@ -1,18 +1,6 @@
 # spatialfinal2021
 Spatial Epidemiology final project, Fall 2021
 
-# to do 
-
-Susan: 
-- Make the 15 panel outcome maps pretty 
-
-Jasmine: 
-- Make the redline maps pretty 
-- Start poster 
-
-Leah: 
-- Globals Moran's I (15 models)
-
 # Outcome information 
 
 Outcomes of interest (by census tract):
@@ -25,12 +13,14 @@ Hazard quotient: The ratio of the exposure to the substance at the level at whic
 
 Hazard index: The sum of the hazard quotients for toxics that affect the same target organ/target system.  An HI <=1 indicates noncancer effect not likely to occur 
 
-Cancer risk: the probability of contracting cancer over a lifetime, assuming continuous exposure (assumed in NATA to be 70 years) 
+Cancer risk: the results of cancer dose-response assessments are converted into a unit risk estimate.  This is multiplied by the estimated inhalation exposure concentration over a lifetime (70 years) to estimate an individuals lifetime cancer risk.   
 
 # Exposure information 
 
 Exposure (Aggregated to census tract):
 - Redlining 
+
+Data from University of Michigan Social Science Institute, by Helen Meier
 
 # Confounders 
 
@@ -39,7 +29,7 @@ We have not identified confounders as redlining is so far in the past, any covar
 # Data editing 
 
 EJScreen data: 
-- For ease of importing to GitHub, we limited the data to only areas within GA before loading the dataset to the project 
+- For ease of importing to GitHub (file size issues), we limited the data to only areas within GA before loading the dataset to the project 
 
 # Dataset information 
 
