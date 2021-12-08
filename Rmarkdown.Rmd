@@ -2,31 +2,43 @@
 title: "Spatial Epi Project"
 author: "Leah Moubadder, Jasmine Aqua, Susan Hoffman"
 date: "11/11/2021"
-output: 
+output:
+  html_document:
+    toc: yes
+    df_print: paged
   pdf_document:
-    toc: true
+    toc: yes
 ---
 
 # Background 
 
 A prime example of structural racism is the 1930s the practice of redlining by the Home Owners Loan Corporation (HOLC).  Although redlining is now illegal, the structure remains and impacts health outcomes today.
 
-Aim: to understand the impact of redlining in Georgia’s HOLC regions on health hazards (diesel particulate matter [PM] levels, respiratory hazard index, and cancer risk due to air toxics) 
+Aim: to understand the impact of redlining in Georgia’s HOLC regions on environmental health hazards (diesel particulate matter [PM] levels, respiratory hazard index, and cancer risk due to air toxics) 
 
 ## Outcomes of interest (by census tract):
-
-- National Scale Air Toxics Assessment Air Toxics Cancer Risk (CANCER)
-- National Scale Air Toxics Assessment Respiratory Hazard Index (RESP)
-- National Scale Air Toxics Assessment Diesel PM (DPM) (DSLPM)
+- (1) National Scale Air Toxics Assessment Air Toxics Cancer Risk (CANCER)
+- (2) National Scale Air Toxics Assessment Respiratory Hazard Index (RESP)
+- (3) National Scale Air Toxics Assessment Diesel PM (DPM) (DSLPM)
 
 Hazard index: The sum of the hazard quotients for toxics that affect the same target organ/target system.  An HI <=1 indicates noncancer effect not likely to occur 
 
 Cancer risk: the results of cancer dose-response assessments are converted into a unit risk estimate.  This is multiplied by the estimated inhalation exposure concentration over a lifetime (70 years) to estimate an individuals lifetime cancer risk.   
 
-##Exposure of interest (aggregated to census tract):
-- Redlining 
+Data were publicly available and provided by the Environmental Protection Agency's National Air Toxics Assessment (NATA). Our data was for the year 2014 at the census-tract level and can be accessed at: https://www.epa.gov/national-air-toxics-assessment/2014-nata-assessment-results.
 
-Data from University of Michigan Social Science Institute, by Helen Meier
+## Exposure of interest (aggregated to census tract):
+- Historic redlining score
+
+Data were publicly available and obtained from University of Michigan Social Science Institute, by Helen Meier at: https://www.openicpsr.org/openicpsr/project/141121/version/V2/view.
+
+Historic redlining grades were coded as following:
+A or "Best" = 1
+B or "Desireable" = 2
+C or "Declining" = 3
+D or "Hazardous" = 4
+
+The historical grades were then weighted to a census-tract level continuous score based on methods available in detail at: https://ncrc.org/holc-health/. The continuous score ranged from 1.0 to 4.0, with higher values representing more hazardous grades.
 
 # Setting up 
 
@@ -44,6 +56,8 @@ library(readxl) # import excel files
 library(rgdal) # spatial methods package
 library(readr) # data file loading package
 library(sf) # spatial methods package
+library(viridis) # color maps in base R
+library(ggmap) # make maps from Google Maps
 
 setwd("C:/Users/SSBUCKE/OneDrive - Emory University/Spatial Project/spatialfinal2021")
 
@@ -114,9 +128,6 @@ full_data <- sp::merge(ej_ga2, HOLC_score2,
 ## Columbus redlined areas
 ## Savannah redlined areas
 
-MyPalette <- c("#A8FF33", "#81F0FF", "#FAFF93", "#FF9693")
-MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
-
 # All GA
 ga_ids <- HOLC_score2$GEOID10
 full_data_georgia <- subset(full_data, GEOID10 %in% ga_ids)
@@ -167,8 +178,229 @@ full_data_savannah <- subset(full_data, GEOID10 %in% savannah_ids)
 
 # Creating redlining maps 
 
+To create our redlining maps, we first created four new categories in the variable `HRS10_bins` based on the continuous HOLC score measure `HRS10`. Although previous work using these data have presented redlining maps using quartiles of the continuous HOLC measure, we decided to create these new categories with fixed cutpoints in order to preserve the interpretation / meaning of the original HOLC categories.
+
+1.0 <= HRS10 < 1.5: “Best”
+1.5 <= HRS10 < 2.5: “Still Desirable”
+2.5 <= HRS10 < 3.5: “Definitely Declining”
+3.5 <= HRS10 <= 4.0: “Hazardous”
+
+Using these categories, we created a map for each HOLC region layered on top of Google Maps in order to better visualize the surrounding environment using methods described in detail at: https://www.r-bloggers.com/2016/03/plotting-choropleths-from-shapefiles-in-r-with-ggmap-toronto-neighbourhoods-by-population/. 
+
 ```{r redline maps}
-###### JASMINE POST HERE #####
+# Creating new, interpretable HOLC categories based on continuous measure
+full_data_georgia@data <- full_data_georgia@data %>% 
+  mutate(HRS10_bins = case_when(HRS10 >= 1 & HRS10 < 1.5 ~ "1", # new categories
+                                HRS10 >= 1.5 & HRS10 < 2.5 ~ "2",
+                                HRS10 >= 2.5 & HRS10 < 3.5 ~ "3",
+                                HRS10 >= 3.5 & HRS10 <= 4 ~ "4"))
+  
+# Creating a custom map palette
+MyPalette <- c("#A8FF33", "#81F0FF", "#FAFF93", "#FF9693")
+MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
+
+# Google Maps API Key
+register_google(key = "AIzaSyDoqRrLTPjuz0V7----1qkkuLKF-FPDkYw")
+# register_google(key = "Your Google Key Here")
+# NOTE: after whoever runs this makes the final PDF document, we need to remove my API key
+
+## Creating redlining map of Atlanta 
+qmap('Atlanta, GA', zoom = 11) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = full_data_atlanta,
+               colour = 'white', fill = 'black', alpha = .4, size = .3)
+
+# Add demographic data
+# The GEOID10 ID is a string - change it to a integer
+full_data_atlanta@data$GEOID10 <- as.numeric(full_data_atlanta@data$GEOID10)
+
+# GGPLOT 
+points_atlanta <- fortify(full_data_atlanta, region = 'GEOID10')
+
+# Plot the census tracts
+atlanta_gmap <- qmap("Atlanta, Georgia", zoom=11)
+atlanta_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_atlanta, fill=NA) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points_atlanta, color='black', fill=NA)
+
+# Merge the shapefile data with the HOLC data, using GEOID10
+points_atlanta_2 <- merge(points_atlanta, full_data_atlanta, by.x='id', by.y='GEOID10', all.x=TRUE)
+points_atlanta_2$HRS10_bins <- sapply(points_atlanta_2$HRS10_bins, as.factor)
+
+# Plot
+atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_atlanta_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+## Creating redlining map of Augusta 
+qmap('Augusta, GA', zoom = 12) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = full_data_augusta,
+               colour = 'white', fill = 'black', alpha = .4, size = .3)
+
+# Add demographic data
+# The GEOID10 ID is a string - change it to a integer
+full_data_augusta@data$GEOID10 <- as.numeric(full_data_augusta@data$GEOID10)
+
+# GGPLOT 
+points_augusta <- fortify(full_data_augusta, region = 'GEOID10')
+
+# Plot the census tracts
+augusta_gmap <- qmap("Augusta, Georgia", zoom=12)
+augusta_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_augusta, fill=NA) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points_augusta, color='black', fill=NA)
+
+# Merge the shapefile data with the HOLC data, using GEOID10
+points_augusta_2 <- merge(points_augusta, full_data_augusta, by.x='id', by.y='GEOID10', all.x=TRUE)
+points_augusta_2$HRS10_bins <- sapply(points_augusta_2$HRS10_bins, as.factor)
+
+# Plot
+augusta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_augusta_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+## Creating redlining map of Columbus 
+qmap('Columbus, GA', zoom = 12) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = full_data_columbus,
+               colour = 'white', fill = 'black', alpha = .4, size = .3)
+
+# Add demographic data
+# The GEOID10 ID is a string - change it to a integer
+full_data_columbus@data$GEOID10 <- as.numeric(full_data_columbus@data$GEOID10)
+
+# GGPLOT 
+points_columbus <- fortify(full_data_columbus, region = 'GEOID10')
+
+# Plot the census tracts
+columbus_gmap <- qmap("Columbus, Georgia", zoom=12)
+columbus_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_columbus, fill=NA) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points_columbus, color='black', fill=NA)
+
+# Merge the shapefile data with the HOLC data, using GEOID10
+points_columbus_2 <- merge(points_columbus, full_data_columbus, by.x='id', by.y='GEOID10', all.x=TRUE)
+
+points_columbus_2$HRS10_bins <- sapply(points_columbus_2$HRS10_bins, as.factor)
+
+# Plot
+columbus_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_columbus_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+## Creating redlining map of Macon 
+qmap('Macon, GA', zoom = 12) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = full_data_macon,
+               colour = 'white', fill = 'black', alpha = .4, size = .3)
+
+# Add demographic data
+# The GEOID10 ID is a string - change it to a integer
+full_data_macon@data$GEOID10 <- as.numeric(full_data_macon@data$GEOID10)
+
+# GGPLOT 
+points_macon <- fortify(full_data_macon, region = 'GEOID10')
+
+# Plot the census tracts
+macon_gmap <- qmap("Macon, Georgia", zoom=12)
+macon_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_macon, fill=NA) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points_macon, color='black', fill=NA)
+
+# Merge the shapefile data with the HOLC data, using GEOID10
+points_macon_2 <- merge(points_macon, full_data_macon, by.x='id', by.y='GEOID10', all.x=TRUE)
+points_macon_2$HRS10_bins <- sapply(points_macon_2$HRS10_bins, as.factor)
+
+# Plot
+macon_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_macon_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+## Creating redlining map of Savannah 
+qmap('Savannah, GA', zoom = 13) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = full_data_savannah,
+               colour = 'white', fill = 'black', alpha = .4, size = .3)
+
+# Add demographic data
+# The GEOID10 ID is a string - change it to a integer
+full_data_savannah@data$GEOID10 <- as.numeric(full_data_savannah@data$GEOID10)
+
+# GGPLOT 
+points_savannah <- fortify(full_data_savannah, region = 'GEOID10')
+
+# Plot the census tracts
+savannah_gmap <- qmap("Savannah, Georgia", zoom=13)
+savannah_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_savannah, fill=NA) +
+  geom_polygon(aes(x=long,y=lat, group=group), data=points, color='black', fill=NA)
+
+# Merge the shapefile data with the HOLC data, using GEOID10
+points_savannah_2 <- merge(points_savannah, full_data_savannah, by.x='id', by.y='GEOID10', all.x=TRUE)
+
+points_savannah_2$HRS10_bins <- sapply(points_savannah_2$HRS10_bins, as.factor)
+
+# Plot
+savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_savannah_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
 ```
 
 
@@ -387,7 +619,7 @@ tmap_arrange(dpm_atl, dpm_aug, dpm_sav, dpm_mac, dpm_col,
              ncol = 5)
 ```
 
-# Desity plots 
+# Density plots 
 
 In order to be transparent about the data distributions in each city, we created density plots of each health hazard by HOLC region in GA. 
 
