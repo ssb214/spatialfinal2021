@@ -12,7 +12,7 @@ output:
 
 # Background 
 
-A prime example of structural racism is the 1930s the practice of redlining by the Home Owners Loan Corporation (HOLC).  Although redlining is now illegal, the structure remains and impacts health outcomes today.
+A prime example of structural racism is the 1930s practice of redlining by the Home Owners Loan Corporation (HOLC).  Although redlining is now illegal, the structure remains and impacts health outcomes today.
 
 Aim: to understand the impact of redlining in Georgia’s HOLC regions on environmental health hazards (diesel particulate matter [PM] levels, respiratory hazard index, and cancer risk due to air toxics) 
 
@@ -28,14 +28,19 @@ Cancer risk: the results of cancer dose-response assessments are converted into 
 Data were publicly available and provided by the Environmental Protection Agency's National Air Toxics Assessment (NATA). Our data was for the year 2014 at the census-tract level and can be accessed at: https://www.epa.gov/national-air-toxics-assessment/2014-nata-assessment-results.
 
 ## Exposure of interest (aggregated to census tract):
-- Historic redlining score
+
+Historic redlining score
 
 Data were publicly available and obtained from University of Michigan Social Science Institute, by Helen Meier at: https://www.openicpsr.org/openicpsr/project/141121/version/V2/view.
 
 Historic redlining grades were coded as following:
+
 A or "Best" = 1
+
 B or "Desirable" = 2
+
 C or "Declining" = 3
+
 D or "Hazardous" = 4
 
 The historical grades were then weighted to a census-tract level continuous score based on methods available in detail at: https://ncrc.org/holc-health/. The continuous score ranged from 1.0 to 4.0, with higher values representing more hazardous grades.
