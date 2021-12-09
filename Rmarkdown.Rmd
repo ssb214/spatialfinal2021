@@ -58,6 +58,9 @@ library(readr) # data file loading package
 library(sf) # spatial methods package
 library(viridis) # color maps in base R
 library(ggmap) # make maps from Google Maps
+library(spdep) # to create spatial neighbors 
+library(spatialEco) # Spatial data cleaning 
+library(spatialreg) # spatial methods package
 
 setwd("C:/Users/SSBUCKE/OneDrive - Emory University/Spatial Project/spatialfinal2021")
 
@@ -677,23 +680,455 @@ cancer
 dslpm
 ```
 
-# Moran's I 
+# Global Moran's I and Spatial Durbin Model 
+## Create neighbors 
+Creating queen contiguity neighbors among each city (spatial islands)
+```{r neighbors, message=FALSE}
 
-```{r Morans I}
-#### LEAH POST HERE ####
+#create neighbors GA
+full_data_georgia <- sp.na.omit(full_data_georgia)
+gnb <- poly2nb(full_data_georgia)
+g_listw <- nb2listw(gnb, style = 'W')
+
+#create neighbors atlanta
+
+full_data_atlanta <- sp.na.omit(full_data_atlanta)
+anb <- poly2nb(full_data_atlanta)
+a_listw <- nb2listw(anb, style = 'W')
+
+#create neighbors macon
+full_data_macon$RESP <- na.omit(full_data_macon$RESP)
+full_data_macon$DSLPM <- na.omit(full_data_macon$DSLPM)
+full_data_macon$CANCER <- na.omit(full_data_macon$CANCER)
+mnb <- poly2nb(full_data_macon)
+m_listw <- nb2listw(mnb, style = 'W')
+
+#create neighbors columbus
+full_data_columbus$RESP <- na.omit(full_data_columbus$RESP)
+full_data_columbus$DSLPM <- na.omit(full_data_columbus$DSLPM)
+full_data_columbus$CANCER <- na.omit(full_data_columbus$CANCER)
+cnb <- poly2nb(full_data_columbus)
+c_listw <- nb2listw(cnb, style = 'W')
+
+#create neighbors augusta
+full_data_augusta$RESP <- na.omit(full_data_augusta$RESP)
+full_data_augusta$DSLPM <- na.omit(full_data_augusta$DSLPM)
+full_data_augusta$CANCER <- na.omit(full_data_augusta$CANCER)
+aanb <- poly2nb(full_data_augusta)
+aa_listw <- nb2listw(aanb, style = 'W')
+
+#create neighbors savannah
+full_data_savannah$RESP <- na.omit(full_data_savannah$RESP)
+full_data_savannah$DSLPM <- na.omit(full_data_savannah$DSLPM)
+full_data_savannah$CANCER <- na.omit(full_data_savannah$CANCER)
+snb <- poly2nb(full_data_savannah)
+s_listw <- nb2listw(snb, style = 'W')
+
 ```
 
-## Results 
+## Aspatial regression: Georgia
+Determining whether there is evidence of *any* clustering as justification for subsequent spatial analyses.
+```{r morans I GA, results=FALSE}
+#specify dependent variables for lm 
+outcomes<- c("RESP", "DSLPM", "CANCER")
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_georgia)
+assign(model,m)
+}
+
+#RESP
+summary(model1)
+#sig and positively associated 
+AIC(model1)
+
+summary(model2)
+#not associated 
+
+summary(model3)
+#sig and positively associated 
+
+#RESP
+lm.morantest(model1, listw = g_listw, zero.policy = T)
+#morans: 0.933920024     , p: <2.2 e-16
+
+#DSLPM
+lm.morantest(model2, listw = g_listw, zero.policy = T)
+#morans:  0.897474442     , p: <2.2 e-16
+
+#CANCER
+lm.morantest(model3, listw = g_listw, zero.policy = T)
+#morans:  0.933282563     , p: <2.2 e-16
+
+```
+## Spatial regression: Spatial Durbin Model (SDM) among all cities 
+```{r SDM GA, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_georgia, listw = g_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+
+#RESP 
+impacts(SDMmodel1, listw = g_listw)
+
+#DSLPM 
+impacts(SDMmodel2, listw = g_listw)
+
+#CANCER 
+impacts(SDMmodel3, listw = g_listw)
+
+
+```
+
+
+## Aspatial regression: Atlanta
+```{r morans I ATL, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_atlanta)
+assign(model,m)
+}
+
+
+summary(model1)
+#sig and positively associated 
+AIC(model1)
+
+summary(model2)
+#non-sig and positively associated 
+
+summary(model3)
+#sig and positively associated 
+
+#RESP
+lm.morantest(model1, listw = a_listw, zero.policy = T)
+#morans: 0.710699601, p: <2.2 e-16
+
+#DSLPM
+lm.morantest(model2, listw = a_listw, zero.policy = T)
+#morans:  0.810299413, p: <2.2 e-16
+
+#CANCER
+lm.morantest(model3, listw = a_listw, zero.policy = T)
+#morans:  0.684958693, p: <2.2 e-16
+
+```
+
+## Spatial regression: SDM in Atlanta
+```{r SDM ATL, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_atlanta, listw = a_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+#RESP 
+impacts(SDMmodel1, listw = a_listw)
+
+#DSLPM 
+impacts(SDMmodel2, listw = a_listw)
+
+#CANCER 
+impacts(SDMmodel3, listw = a_listw)
+
+```
+
+## Aspatial regression: Macon
+```{r morans I macon, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_macon)
+assign(model,m)
+}
+
+summary(model1)
+#not associated
+AIC(model1)
+
+summary(model2)
+#not associated
+
+summary(model3)
+#not associated
+
+#RESP
+lm.morantest(model1, listw = m_listw, zero.policy = T)
+#morans: 0.36166334 , p: 0.006558
+
+#DSLPM
+lm.morantest(model2, listw = m_listw, zero.policy = T)
+#morans:  0.41996037, p: 0.002542
+
+#CANCER
+lm.morantest(model3, listw = m_listw, zero.policy = T)
+#morans:  0.33689573    , p:  0.009534
+
+```
+## Spatial regression: SDM in Macon
+```{r SDM macon, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_macon, listw = m_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+#RESP 
+impacts(SDMmodel1, listw = m_listw)
+
+#DSLPM 
+impacts(SDMmodel2, listw = m_listw)
+
+#CANCER 
+impacts(SDMmodel3, listw = m_listw)
+
+```
+
+## Aspatial regression: Columbus
+```{r morans I columbus, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_columbus)
+assign(model,m)
+}
+
+summary(model1)
+#not associated
+AIC(model1)
+
+summary(model2)
+#not associated
+
+summary(model3)
+#not associated
+
+#RESP
+lm.morantest(model1, listw = c_listw, zero.policy = T)
+#morans: 0.19419672 , p: 0.01714
+
+#DSLPM
+lm.morantest(model2, listw = c_listw, zero.policy = T)
+#morans:  0.50627630, p: 1.037e-05
+
+#CANCER
+lm.morantest(model3, listw = c_listw, zero.policy = T)
+#morans:  0.17682483     , p:  0.02288
+
+```
+
+## Spatial regression: SDM in Columbus
+```{r SDM columbus, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_columbus, listw = c_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+#RESP 
+impacts(SDMmodel1, listw = c_listw)
+
+#DSLPM 
+impacts(SDMmodel2, listw = c_listw)
+
+#CANCER 
+impacts(SDMmodel3, listw = c_listw)
+
+
+```
+## Aspatial regression: Augusta
+```{r morans I augusta, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_augusta)
+assign(model,m)
+}
+
+summary(model1)
+#not associated
+AIC(model1)
+
+summary(model2)
+#not associated
+
+summary(model3)
+#sig and positively associated
+
+#RESP
+lm.morantest(model1, listw = aa_listw, zero.policy = T)
+#morans: 0.26835958  , p: 0.003272
+
+#DSLPM
+lm.morantest(model2, listw = aa_listw, zero.policy = T)
+#morans:  0.36258233, p: 0.0003841
+
+#CANCER
+lm.morantest(model3, listw = aa_listw, zero.policy = T)
+#morans:  0.26876071     , p:  0.003245
+
+```
+
+## Spatial regression: SDM in Augusta
+```{r SDM augusta, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_augusta, listw = aa_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+
+#RESP 
+impacts(SDMmodel1, listw = aa_listw)
+
+#DSLPM 
+impacts(SDMmodel2, listw = aa_listw)
+
+#CANCER 
+impacts(SDMmodel3, listw = aa_listw)
+
+
+```
+
+## Aspatial regression: Savannah
+```{r morans I savannah, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+model <- paste("model",i, sep="")
+m <- lm(as.formula(paste(outcomes[i],"~ HRS10")), data=full_data_savannah)
+assign(model,m)
+}
+
+summary(model1)
+#not associated
+AIC(model1)
+
+summary(model2)
+#not associated
+
+summary(model3)
+#sig and positively associated
+
+#RESP
+lm.morantest(model1, listw = s_listw, zero.policy = T)
+#morans: 0.55149243  , p: 9.7e-07
+
+#DSLPM
+lm.morantest(model2, listw = s_listw, zero.policy = T)
+#morans:  0.73040748, p: 4.246e-10
+
+#CANCER
+lm.morantest(model3, listw = s_listw, zero.policy = T)
+#morans:  0.42231295     , p:  8.289e-05
+
+```
+
+## Spatial regression: SDM in Savannah
+```{r SDM savannah, results=FALSE}
+
+#for loop: 
+for(i in 1:length(outcomes)){
+SDMmodel <- paste("SDMmodel",i, sep="")
+m <- lagsarlm(as.formula(paste(outcomes[i],"~ HRS10")), 
+              data=full_data_savannah, listw = s_listw, Durbin=T)
+assign(SDMmodel,m)
+}
+
+#RESP
+summary(SDMmodel1)
+
+#DSLPM
+summary(SDMmodel2)
+
+#CANCER
+summary(SDMmodel3)
+
+#RESP 
+impacts(SDMmodel1, listw = s_listw)
+
+#DSLPM 
+impacts(SDMmodel2, listw = s_listw)
+
+#CANCER 
+impacts(SDMmodel3, listw = s_listw)
+
+
+```
+
+# Results 
 
 Spatial dependence (Global Moran’s I) was significant in all scenarios
 
-# Spatial Durbin Model 
-
-```{r SDM}
-#### LEAH POST HERE ####
-```
-
-## Results 
-
 Higher redlining was associated with an increase in the total impact of all health hazards in all HOLC regions, with the exception of diesel PM in Columbus and Augusta
-
