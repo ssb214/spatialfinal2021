@@ -135,13 +135,21 @@ full_data <- sp::merge(ej_ga2, HOLC_score2,
 ga_ids <- HOLC_score2$GEOID10
 full_data_georgia <- subset(full_data, GEOID10 %in% ga_ids)
 
+# Creating new, interpretable HOLC categories based on continuous measure
+
+full_data_georgia@data <- full_data_georgia@data %>% 
+  mutate(HRS10_bins = case_when(HRS10 >= 1 & HRS10 < 1.5 ~ "1", # new categories
+                                HRS10 >= 1.5 & HRS10 < 2.5 ~ "2",
+                                HRS10 >= 2.5 & HRS10 < 3.5 ~ "3",
+                                HRS10 >= 3.5 & HRS10 <= 4 ~ "4"))
+
 # writeOGR(obj=full_data_georgia, dsn="tempdir", layer="full_data_georgia", driver="ESRI Shapefile")
 
 # Atlanta only
 atlanta <- HOLC_score2 %>% 
   filter(CBSA=="12060")
 atlanta_ids <- atlanta$GEOID10
-full_data_atlanta <- subset(full_data, GEOID10 %in% atlanta_ids)
+full_data_atlanta <- subset(full_data_georgia, GEOID10 %in% atlanta_ids)
 
 # writeOGR(obj=full_data_atlanta, dsn="tempdir", layer="full_data_atlanta", driver="ESRI Shapefile")
 
@@ -149,7 +157,7 @@ full_data_atlanta <- subset(full_data, GEOID10 %in% atlanta_ids)
 augusta <- HOLC_score2 %>% 
   filter(CBSA=="12260")
 augusta_ids <- augusta$GEOID10
-full_data_augusta<- subset(full_data, GEOID10 %in% augusta_ids)
+full_data_augusta<- subset(full_data_georgia, GEOID10 %in% augusta_ids)
 
 # writeOGR(obj=full_data_augusta, dsn="tempdir", layer="full_data_augusta", driver="ESRI Shapefile")
 
@@ -157,7 +165,7 @@ full_data_augusta<- subset(full_data, GEOID10 %in% augusta_ids)
 columbus <- HOLC_score2 %>% 
   filter(CBSA=="17980")
 columbus_ids <- columbus$GEOID10
-full_data_columbus <- subset(full_data, GEOID10 %in% columbus_ids)
+full_data_columbus <- subset(full_data_georgia, GEOID10 %in% columbus_ids)
 
 # writeOGR(obj=full_data_columbus, dsn="tempdir", layer="full_data_columbus", driver="ESRI Shapefile")
 
@@ -165,7 +173,7 @@ full_data_columbus <- subset(full_data, GEOID10 %in% columbus_ids)
 macon <- HOLC_score2 %>% 
   filter(CBSA=="31420")
 macon_ids <- macon$GEOID10
-full_data_macon <- subset(full_data, GEOID10 %in% macon_ids)
+full_data_macon <- subset(full_data_georgia, GEOID10 %in% macon_ids)
 
 # writeOGR(obj=full_data_macon, dsn="tempdir", layer="full_data_macon", driver="ESRI Shapefile")
 
@@ -173,7 +181,7 @@ full_data_macon <- subset(full_data, GEOID10 %in% macon_ids)
 savannah <- HOLC_score2 %>% 
   filter(CBSA=="42340")
 savannah_ids <- savannah$GEOID10
-full_data_savannah <- subset(full_data, GEOID10 %in% savannah_ids)
+full_data_savannah <- subset(full_data_georgia, GEOID10 %in% savannah_ids)
 
 # writeOGR(obj=full_data_savannah, dsn="tempdir", layer="full_data_savannah", driver="ESRI Shapefile")
 
@@ -191,13 +199,6 @@ To create our redlining maps, we first created four new categories in the variab
 Using these categories, we created a map for each HOLC region layered on top of Google Maps in order to better visualize the surrounding environment using methods described in detail at: https://www.r-bloggers.com/2016/03/plotting-choropleths-from-shapefiles-in-r-with-ggmap-toronto-neighbourhoods-by-population/. 
 
 ```{r redline maps}
-# Creating new, interpretable HOLC categories based on continuous measure
-full_data_georgia@data <- full_data_georgia@data %>% 
-  mutate(HRS10_bins = case_when(HRS10 >= 1 & HRS10 < 1.5 ~ "1", # new categories
-                                HRS10 >= 1.5 & HRS10 < 2.5 ~ "2",
-                                HRS10 >= 2.5 & HRS10 < 3.5 ~ "3",
-                                HRS10 >= 3.5 & HRS10 <= 4 ~ "4"))
-  
 # Creating a custom map palette
 MyPalette <- c("#A8FF33", "#81F0FF", "#FAFF93", "#FF9693")
 MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
