@@ -3,11 +3,11 @@ title: "Spatial Epi Project"
 author: "Leah Moubadder, Jasmine Aqua, Susan Hoffman"
 date: "11/11/2021"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     toc: yes
     df_print: paged
-  pdf_document:
-    toc: yes
 ---
 
 # Background 
@@ -34,7 +34,7 @@ Data were publicly available and obtained from University of Michigan Social Sci
 
 Historic redlining grades were coded as following:
 A or "Best" = 1
-B or "Desireable" = 2
+B or "Desirable" = 2
 C or "Declining" = 3
 D or "Hazardous" = 4
 
@@ -46,7 +46,7 @@ NOTE: EJScreen data
 
 For ease of importing to GitHub (file size issues), we limited the data to only areas within GA before loading the dataset to the project 
 
-```{r setup, message=FALSE}
+```{r setup, message=FALSE, warning=FALSE}
 # Packages 
 library(tmap) # Mapping spatial file 
 library(tidyverse) # data wrangling tools 
@@ -87,13 +87,30 @@ ga_tracts_10 <- readOGR(dsn=path.expand("Data/tl_2020_13_all"),layer="tl_2020_13
 
 Data convention HOLC_map_cityname will be used to create datasets with extra census tracts for mapping purposes. 
 
-HOLC_full: Census tract + HOLC data, all Georgia census tracts
-HOLC_full_georgia: Census tract + HOLC data, all Georgia census tracts, only GA census tracts with HOLC data
-HOLC_full_atlanta: Census tract + HOLC data, only census tracts in Atlanta with HOLC data
-HOLC_full_augusta: Census tract + HOLC data, only census tracts in Augusta with HOLC data
-HOLC_full_columbus: Census tract + HOLC data, only census tracts in Columbus with HOLC data
-HOLC_full_macon: Census tract + HOLC data, only census tracts in Macon with HOLC data
-HOLC_full_savannah: Census tract + HOLC data, only census tracts in Savannah with HOLC data
+* HOLC_full: Census tract + HOLC data, all Georgia census tracts
+
+* HOLC_full_georgia: Census tract + HOLC data, all Georgia census tracts, only GA census tracts with HOLC data
+
+* HOLC_full_atlanta: Census tract + HOLC data, only census tracts in Atlanta with HOLC data
+
+* HOLC_full_augusta: Census tract + HOLC data, only census tracts in Augusta with HOLC data
+
+* HOLC_full_columbus: Census tract + HOLC data, only census tracts in Columbus with HOLC data
+
+* HOLC_full_macon: Census tract + HOLC data, only census tracts in Macon with HOLC data
+
+* HOLC_full_savannah: Census tract + HOLC data, only census tracts in Savannah with HOLC data
+
+To prepare for our redlining maps, we first created four new categories in the variable `HRS10_bins` based on the continuous HOLC score measure `HRS10`. Although previous work using these data have presented redlining maps using quartiles of the continuous HOLC measure, we decided to create these new categories with fixed cutpoints in order to preserve the interpretation / meaning of the original HOLC categories.
+
+* 1.0 <= HRS10 < 1.5: “Best”
+
+* 1.5 <= HRS10 < 2.5: “Still Desirable”
+
+* 2.5 <= HRS10 < 3.5: “Definitely Declining”
+
+* 3.5 <= HRS10 <= 4.0: “Hazardous”
+
 
 ```{r data edits}
 # Cleaning HOLC score data
@@ -189,24 +206,28 @@ full_data_savannah <- subset(full_data_georgia, GEOID10 %in% savannah_ids)
 
 # Creating redlining maps 
 
-To create our redlining maps, we first created four new categories in the variable `HRS10_bins` based on the continuous HOLC score measure `HRS10`. Although previous work using these data have presented redlining maps using quartiles of the continuous HOLC measure, we decided to create these new categories with fixed cutpoints in order to preserve the interpretation / meaning of the original HOLC categories.
+Using the HOLC categories described above, we created a map for each HOLC region layered on top of Google Maps in order to better visualize the surrounding environment using methods described in detail at: https://www.r-bloggers.com/2016/03/plotting-choropleths-from-shapefiles-in-r-with-ggmap-toronto-neighbourhoods-by-population/. 
 
-1.0 <= HRS10 < 1.5: “Best”
-1.5 <= HRS10 < 2.5: “Still Desirable”
-2.5 <= HRS10 < 3.5: “Definitely Declining”
-3.5 <= HRS10 <= 4.0: “Hazardous”
+```{r google api key, include=FALSE, message=FALSE}
+register_google(key = "AIzaSyDoqRrLTPjuz0V7----1qkkuLKF-FPDkYw")
+```
 
-Using these categories, we created a map for each HOLC region layered on top of Google Maps in order to better visualize the surrounding environment using methods described in detail at: https://www.r-bloggers.com/2016/03/plotting-choropleths-from-shapefiles-in-r-with-ggmap-toronto-neighbourhoods-by-population/. 
 
+<<<<<<< HEAD
+```{r google api key2, eval=FALSE, message=FALSE, include=TRUE}
+register_google(key = "Your Google Key Here")
+```
+
+
+
+```{r redline maps, warning=FALSE, message=FALSE, results='hide'}
+=======
 ```{r redline maps}
+>>>>>>> db556d9b490f3d9466c14fe24993854294b55be4
 # Creating a custom map palette
 MyPalette <- c("#A8FF33", "#81F0FF", "#FAFF93", "#FF9693")
 MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
 
-# Google Maps API Key
-register_google(key = "AIzaSyDoqRrLTPjuz0V7----1qkkuLKF-FPDkYw")
-# register_google(key = "Your Google Key Here")
-# NOTE: after whoever runs this makes the final PDF document, we need to remove my API key
 
 ## Creating redlining map of Atlanta 
 qmap('Atlanta, GA', zoom = 11) +
@@ -380,7 +401,7 @@ points_savannah <- fortify(full_data_savannah, region = 'GEOID10')
 # Plot the census tracts
 savannah_gmap <- qmap("Savannah, Georgia", zoom=13)
 savannah_gmap +geom_polygon(aes(x=long,y=lat, group=group), data=points_savannah, fill=NA) +
-  geom_polygon(aes(x=long,y=lat, group=group), data=points, color='black', fill=NA)
+  geom_polygon(aes(x=long,y=lat, group=group), data=points_savannah, color='black', fill=NA)
 
 # Merge the shapefile data with the HOLC data, using GEOID10
 points_savannah_2 <- merge(points_savannah, full_data_savannah, by.x='id', by.y='GEOID10', all.x=TRUE)
@@ -388,6 +409,97 @@ points_savannah_2 <- merge(points_savannah, full_data_savannah, by.x='id', by.y=
 points_savannah_2$HRS10_bins <- sapply(points_savannah_2$HRS10_bins, as.factor)
 
 # Plot
+savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_savannah_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+```
+
+
+## Redline Maps Output
+
+```{r redline maps output, message=FALSE, warning=FALSE, echo=FALSE}
+atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_atlanta_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+augusta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_augusta_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+columbus_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_columbus_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
+macon_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_macon_2, color='black') + 
+  scale_fill_manual(name = "Historic Redlining Score Quartile", 
+                    labels = c("1" = "Low (Q1)", 
+                               "2" = "Medium (Q2)", 
+                               "3" = "High (Q3)", 
+                               "4" = "Very High (Q4)"),
+                    values = c("1" = "#A8FF33", 
+                               "2" = "#81F0FF", 
+                               "3" = "#FAFF93", 
+                               "4" = "#FF9693")) + 
+  theme(legend.position="top",
+        legend.key.size = unit(0.1, 'cm'), #change legend key size
+        legend.key.height = unit(0.1, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=8)) #change legend text font size
+
 savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_savannah_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
