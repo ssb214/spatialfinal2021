@@ -224,7 +224,7 @@ register_google(key = "Your Google Key Here")
 
 
 
-```{r redline maps, warning=FALSE, message=FALSE, results='hide'}
+```{r redline maps, warning=FALSE, message=FALSE, results='hide', fig.show='hide'}
 # Creating a custom map palette
 MyPalette <- c("#A8FF33", "#81F0FF", "#FAFF93", "#FF9693")
 MyLabels <- c("Low (Q1)", "Medium (Q2)", "High (Q3)", "Very High (Q4)")
