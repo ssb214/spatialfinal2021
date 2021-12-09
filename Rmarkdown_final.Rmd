@@ -3,11 +3,11 @@ title: "Spatial Epi Project"
 author: "Leah Moubadder, Jasmine Aqua, Susan Hoffman"
 date: "11/11/2021"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     toc: yes
     df_print: paged
-  pdf_document:
-    toc: yes
 ---
 
 # Background 
