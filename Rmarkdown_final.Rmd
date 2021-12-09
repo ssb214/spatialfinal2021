@@ -432,7 +432,9 @@ savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), da
 
 ## Redline Maps Output
 
-```{r redline maps output, message=FALSE, warning=FALSE, echo=FALSE}
+###Atlanta
+
+```{r redline maps output atl, message=FALSE, warning=FALSE, echo=FALSE}
 atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_atlanta_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
@@ -449,7 +451,11 @@ atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), dat
         legend.key.width = unit(0.3, 'cm'), #change legend key width
         legend.title = element_text(size=8), #change legend title font size
         legend.text = element_text(size=8)) #change legend text font size
+```
 
+###Augusta
+
+```{r redline maps output aug, message=FALSE, warning=FALSE, echo=FALSE}
 augusta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_augusta_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
@@ -466,7 +472,11 @@ augusta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), dat
         legend.key.width = unit(0.3, 'cm'), #change legend key width
         legend.title = element_text(size=8), #change legend title font size
         legend.text = element_text(size=8)) #change legend text font size
+```
 
+### Columbus
+
+```{r redline maps output col, message=FALSE, warning=FALSE, echo=FALSE}
 columbus_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_columbus_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
@@ -483,7 +493,11 @@ columbus_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), da
         legend.key.width = unit(0.3, 'cm'), #change legend key width
         legend.title = element_text(size=8), #change legend title font size
         legend.text = element_text(size=8)) #change legend text font size
+```
 
+### Macon
+
+```{r redline maps output mac, message=FALSE, warning=FALSE, echo=FALSE}
 macon_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_macon_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
                     labels = c("1" = "Low (Q1)", 
@@ -500,6 +514,11 @@ macon_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=
         legend.key.width = unit(0.3, 'cm'), #change legend key width
         legend.title = element_text(size=8), #change legend title font size
         legend.text = element_text(size=8)) #change legend text font size
+```
+
+### Savannah
+
+```{r redline maps output sav, message=FALSE, warning=FALSE, echo=FALSE}
 
 savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_savannah_2, color='black') + 
   scale_fill_manual(name = "Historic Redlining Score Quartile", 
