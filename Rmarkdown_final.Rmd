@@ -14,7 +14,7 @@ output:
 
 A prime example of structural racism is the 1930s practice of redlining by the Home Owners Loan Corporation (HOLC).  Although redlining is now illegal, the structure remains and impacts health outcomes today.
 
-Aim: to understand the impact of redlining in Georgia’s HOLC regions on environmental health hazards (diesel particulate matter [PM] levels, respiratory hazard index, and cancer risk due to air toxics) 
+Research question: Is historical redlining associated with census-tract level toxic air emissions (e.g., cancer risk due to air toxics, respiratory hazards, and diesel particulate matter)?
 
 ## Outcomes of interest (by census tract):
 - (1) National Scale Air Toxics Assessment Air Toxics Cancer Risk (CANCER)
@@ -796,7 +796,11 @@ dslpm
 
 # Global Moran's I and Spatial Durbin Model 
 ## Create neighbors 
-Creating queen contiguity neighbors among each city (spatial islands)
+
+Creating queen contiguity neighbors among each city (spatial islands) and among all cities combined.
+
+We assumed that census tracts that share either an edge or a boundary interact with the index county, therefore neighbors were defined using queen contiguity (row standardized).
+
 ```{r neighbors, message=FALSE}
 
 #create neighbors GA
@@ -839,6 +843,8 @@ snb <- poly2nb(full_data_savannah)
 s_listw <- nb2listw(snb, style = 'W')
 
 ```
+
+Given that spatial dependence was present in all scenarios, we used spatial regression (spatial Durbin model [SDM]) to evaluate the association between historic redlining and our outcomes of interest.
 
 ## Aspatial regression: Georgia
 Determining whether there is evidence of *any* clustering as justification for subsequent spatial analyses.
@@ -1243,6 +1249,34 @@ impacts(SDMmodel3, listw = s_listw)
 
 # Results 
 
+## Main findings
+
 Spatial dependence (Global Moran’s I) was significant in all scenarios
 
 Higher redlining was associated with an increase in the total impact of all health hazards in all HOLC regions, with the exception of diesel PM in Columbus and Augusta
+
+Direct Impact: The effect, averaged across all regions, of a change in redlining grade in a census tract(i) on the outcome in census tract(i), accounting for the fact that changing local redlining might spillover to change neighbor’s outcomes, which may further affect local outcomes
+
+
+Indirect Impact: The effect, averaged across all regions, of a change in a neighbor’s (e.g., census tract(j) redlining grade on the local outcome  in census tract(i)  
+
+
+## Limitations: 
+
+It is possible that the association between redlining and environmental hazards is modified by gentrification, which we did not include or stratify by in our analysis.
+
+
+## Strengths: 
+
+This study utilized publicly available data which reduces the burden on the target population. 
+
+It is possible that the true data generating process is not we hypothesize and may align with the spatial error or lag model, but even if this is the case, we'd still expect the spatial Durbin to produce unbiased estimates. 
+
+## Public health importance: 
+
+This research advances our understanding of how environmental hazards may result from historical practices, which may be further exacerbated by present-day practices that fail to center historically underserved communities in the adaptation of environmental amenities. Future research should explore potential modification by gentrification.
+
+
+
+
+
