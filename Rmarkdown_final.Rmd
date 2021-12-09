@@ -432,7 +432,7 @@ savannah_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), da
 
 ## Redline Maps Output
 
-###Atlanta
+### Atlanta
 
 ```{r redline maps output atl, message=FALSE, warning=FALSE, echo=FALSE}
 atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_atlanta_2, color='black') + 
@@ -453,7 +453,7 @@ atlanta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), dat
         legend.text = element_text(size=8)) #change legend text font size
 ```
 
-###Augusta
+### Augusta
 
 ```{r redline maps output aug, message=FALSE, warning=FALSE, echo=FALSE}
 augusta_gmap + geom_polygon(aes(x=long,y=lat, group=group, fill=HRS10_bins), data=points_augusta_2, color='black') + 
